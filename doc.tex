@@ -81,14 +81,24 @@ The most expensive part of software testing is not to run or to evaluate them, m
 
 \subsection{Properties}
 
-A property is defined as a function that takes some random test data, provides that test data to the to be tested function and determines afterword weather a general rule about the relation between the random input and the to be tested functions output holds.
+A property is defined as a function that takes some random test data, provides that test data to the to be tested function and determines afterword whether a general rule about the relation between the random input and the to be tested functions output holds.
 
 For example imagine we want to test the "sum" function. We know that the sum of the elements in an array is always the same, no matter the order of the array. We can formulate this kind of logical assertion as a property in Haskell:
 
 \begin{minted}{haskell}
-prop_sumShuffled xs = 
+prop_sumRev :: [Int] -> Bool
+prop_sumRev xs = 
     sum xs == sum (reverse xs)
 \end{minted}
+
+Now we can use QuickCheck to validate whether or not this statement about the sum function holds:
+
+\begin{minted}{haskell}
+quickCheck prop_sumRev
+-- OK, passed 100 tests.
+\end{minted}
+
+QuickCheck generates a set of inputs for the provided function, in this case arrays of Int. QuickCheck may be able to infer the type of the to be generated parameters, but it is good practice to define the type explicitly. That way it is also certain that the generated input is of type [Int] and not [Double] for example. The property holds if the function always returns true for every generated test case. \cite{Claessen2000} Here QuickCheck generated 100 test cases which all yielded true, it can therefore be assumed that the property holds.
 
 \subsection{Generators}
 
