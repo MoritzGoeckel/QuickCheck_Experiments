@@ -65,9 +65,9 @@ A tool for random testing} % Subtitle
 \section{Introduction}
 \subsection{The problem with testing}
 
-Testing is the primary method to evaluate the correctness of software today. \cite{Ammann2016} Even tho exhaustive testing is possible in many cases and majority of bugs can be triggered by relatively few test cases, \cite{Kuhn2004} the required effort to find these test cases can be high. In practice the time spend writing code is not seldom matched by the time spend on finding bugs and creating tests.
+Testing is the primary method to evaluate the correctness of software today. \cite{Ammann2016} Even though exhaustive testing is possible in many cases and majority of bugs can be triggered by relatively few test cases, \cite{Kuhn2004} the required effort to find these test cases can be high. In practice the time spend writing code is not seldom matched by the time spend on finding bugs and creating tests.
 
-The problem that arises with testing is that the amount of required test cases for a good coverage of a software system is rising exponentially as the system becomes larger and more complex. Imagine for example a software with n features. To test each feature individually, one would need at least n test cases. This is still feasible. But in most systems the features interact with each other. This leads to the necessity to also test every feature in cooperation with every other feature. Testing these pairs of features requires us to write therefore an additional n*n new test cases. This thought experiment can be continued with three interacting features, ergo n*n*n necessary test cases and so forth. \cite{Hughes2016}
+The problem that arises with testing is that the amount of required test cases for a good coverage of a software system is rising exponentially as the system becomes larger and more complex. Imagine for example a software with n features. To test each feature individually, one would need at least n test cases. This is still feasible. But in most systems the features interact with each other. This leads to the necessity to also test every feature in cooperation with every other feature. Testing these pairs of features requires us to write therefore an additional $n^2$  new test cases. This thought experiment can be continued with three interacting features, ergo $n^3$ necessary test cases and so forth. \cite{Hughes2016}
 
 We find that in very large complex systems it is often no longer feasible to gain good test coverage by writing test cases manually. Another way of testing needs to be found. 
 
@@ -100,9 +100,28 @@ quickCheck prop_sumRev
 
 QuickCheck generates a set of inputs for the provided function, in this case arrays of Int. QuickCheck may be able to infer the type of the to be generated parameters, but it is good practice to define the type explicitly. That way it is also certain that the generated input is of type [Int] and not [Double] for example. The property holds if the function always returns true for every generated test case. \cite{Claessen2000} Here QuickCheck generated 100 test cases which all yielded true, it can therefore be assumed that the property holds.
 
+Many logical properties only hold under certain conditions. Fortunately QuickCheck provides a concise way to define such an conditional property:
+
+\begin{minted}{haskell}
+prop_positivePlusOne :: Int -> Property
+prop_positivePlusOne x = 
+    x > 0 ==> x + 1 > 0
+
+quickCheck prop_positivePlusOne  
+-- OK, passed 100 tests; 110 discarded.
+\end{minted}
+
+This property basically states that if x is positive then (x + 1) is also positive. The ==> operator asserts that only if the left side is true, the right side needs to be true as well. \cite{Claessen2000} Not all test cases are relevant to the test outcome when using this operator. In this example all test cases with x being zero or negative do not contribute to the result and are therefore discarded. That is why QuickCheck actually had to run 210 tests to find 100 valid ones.  
+
+As seen in the previous example, it is sometimes important to have some information about the generated input data to evaluate how reliable the test actually was. To get more insights into the test cases QuickCheck provides us the functions "classify" and "collect". Here an example:
+
+\begin{minted}{haskell}
+-- todo
+\end{minted}
+
 \subsection{Generators}
 
-To generate a concrete test case from a general property some varying input data is required to pass to the to be tested function. This input data is generated randomly in QuickCheck. Even tho it might be surprising, it turns out that this random approach competes quite well with systematic methods in practice. \cite{Claessen2000}
+To generate a concrete test case from a general property some varying input data is required to pass to the to be tested function. This input data is generated randomly in QuickCheck. Even though it might be surprising, it turns out that this random approach competes quite well with systematic methods in practice. \cite{Claessen2000}
 
 QuickCheck has no heuristics or assumptions about the possible input data, it is therefore the task of the user to define its structure. This can be done by implementing generators. This enables the user to define the distribution of the test data to model the expected real world input as close as possible.
 
