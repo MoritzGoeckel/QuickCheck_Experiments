@@ -20,6 +20,11 @@
 %\usepackage[T1]{fontenc} % Required for accented characters
 \linespread{1.50} % Change line spacing here, Palatino benefits from a slight increase by default
 
+\usepackage{minted} %Syntax highlighting
+\usepackage{etoolbox} %Change minted line spacing
+\AtBeginEnvironment{minted}{\singlespacing%
+    \fontsize{10}{10}\selectfont}
+
 \makeatletter
 %\renewcommand\@biblabel[1]{\textbf{#1.}} % Change the square brackets for each bibliography item from '[1]' to '1.'
 %\renewcommand{\@listI}{\itemsep=0pt} % Reduce the space between items in the itemize and enumerate environments and the bibliography
@@ -74,11 +79,18 @@ One way evaluate a softwares correctness is to keep and eye on irregularities wh
 
 The most expensive part of software testing is not to run or to evaluate them, most of the time the most expensive part is writing the test cases. QuickCheck tackles that problem by letting the software developer write generalized test functions of which each covers many test cases. These generalized test functions in QuickCheck are called properties. \cite{Hughes2010} Because of this generalized approach it is not necessary to write more than one property for each logical property of the to be tested function as many different test cases will be generated anyway. \cite{Hughes2006}
 
-\subsection{Property}
+\subsection{Properties}
 
 A property is defined as a function that takes some random test data, provides that test data to the to be tested function and determines afterword weather a general rule about the relation between the random input and the to be tested functions output holds.
 
-\subsection{Input}
+For example imagine we want to test the "sum" function. We know that the sum of the elements in an array is always the same, no matter the order of the array. We can formulate this kind of logical assertion as a property in Haskell:
+
+\begin{minted}{haskell}
+prop_sumShuffled xs = 
+    sum xs == sum (reverse xs)
+\end{minted}
+
+\subsection{Generators}
 
 To generate a concrete test case from a general property some varying input data is required to pass to the to be tested function. This input data is generated randomly in QuickCheck. Even tho it might be surprising, it turns out that this random approach competes quite well with systematic methods in practice. \cite{Claessen2000}
 

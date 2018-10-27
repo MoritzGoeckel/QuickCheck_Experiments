@@ -1,4 +1,4 @@
 #!/bin/sh
-pdflatex -interaction=nonstopmode doc 
+pdflatex -shell-escape -interaction=nonstopmode doc 
 biber doc
-pdflatex -interaction=nonstopmode doc 
+pdflatex -shell-escape -interaction=nonstopmode doc 
