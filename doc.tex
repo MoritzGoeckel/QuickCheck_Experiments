@@ -1,0 +1,129 @@
+% RUN pdflatex doc
+% RUN biber doc
+% RUN pdflatex doc
+% PROFIT!
+
+\documentclass[a4paper, 12pt]{article} % Font size (can be 10pt, 11pt or 12pt) and paper size (remove a4paper for US letter paper)
+
+\usepackage{filecontents}
+
+\usepackage[latin1]{inputenc}
+
+\usepackage{biblatex}
+\addbibresource{doc.bib}
+
+\usepackage[protrusion=tr\"u,expansion=tr\"u]{microtype} % Better typography
+\usepackage{graphicx} % Required for including pictures
+\usepackage{wrapfig} % Allows in-line images
+
+\usepackage{mathpazo} % Use the Palatino font
+%\usepackage[T1]{fontenc} % Required for accented characters
+\linespread{1.50} % Change line spacing here, Palatino benefits from a slight increase by default
+
+\makeatletter
+%\renewcommand\@biblabel[1]{\textbf{#1.}} % Change the square brackets for each bibliography item from '[1]' to '1.'
+%\renewcommand{\@listI}{\itemsep=0pt} % Reduce the space between items in the itemize and enumerate environments and the bibliography
+
+\renewcommand{\maketitle}{ 
+\begin{flushright} % Right align
+{\LARGE\@title} % Increase the font size of the title
+
+\vspace{50pt} % Some vertical space between the title and author name
+
+{\large\@author}
+\\\@date 
+
+\vspace{40pt}
+\end{flushright}
+}
+
+\title{\textbf{QuickCheck}\\ % Title
+A tool for random testing} % Subtitle
+
+\author{\textsc{Moritz G\"ockel} % Author
+\\{\textit{Hochschule Karlsruhe Technik und Wirtschaft}}} % Institution
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\vspace{30pt}
+
+\newpage
+\tableofcontents
+\newpage
+
+\section{Abstract}
+
+\section{Introduction}
+\subsection{The problem with testing}
+
+Testing is the primary method to evaluate the correctness of software today. \cite{Ammann2016} Even tho exhaustive testing is possible in many cases and majority of bugs can be triggered by relatively few test cases, \cite{Kuhn2004} the required effort to find these test cases can be high. In practice the time spend writing code is not seldom matched by the time spend on finding bugs and creating tests.
+
+The problem that arises with testing is that the amount of required test cases for a good coverage of a software system is rising exponentially as the system becomes larger and more complex. Imagine for example a software with n features. To test each feature individually, one would need at least n test cases. This is still feasable. But in most systems the features interact with each other. This leads to the neccacity to also test every feature in cooperation with every other feature. Testing these pairs of features requires us to write therfore an additional n*n new test cases. This thought experiment can be continued with three interacting features, ergo n*n*n neccessary test cases and so forth. \cite{Hughes2016}
+
+We find that in very large complex systems it is often no longer feasable to gain good test coverage by writing test cases manually. Another way of testing needs to be found. 
+
+\subsection{Random test generation}
+
+One way evaluate a softwares correctness is to keep and eye on irregularities while manually testing it. This way is very time consuming as every test case has to be conducted by a person. It can take months to test a big software system this way. Because of this human element, manual testing is also very error prone and therefore not reliable. As an additon to manual testing automated testing has beed widely adopted in the industry. With automated testing bigger test coverage can be achieved and a test runs can be conducted within minutes or hours istead of the months it would take to manually test the software. Unfortunatly the testing process is still one of the most expensive parts of software developement, even with automated testing. Not seldom the testing efforts account for about half of the developement costs. \cite{Claessen2000} The logical next step to reduce these costs after automated testing is the automated generation of test cases. The utilization of automated generation of test cases may lead to further reduced testing effort or the posibillity to gain more test coverage in less time.
+
+\section{Theory}
+
+The most expensive part of software testing is not to run or to evaluate them, most of the time the most expensive part is writing the test cases. QuickCheck tackles that problem by letting the software developer write generalized test functions of which each covers many test cases. These generalized test functions in QuickCheck are called properties. \cite{Hughes2010} Becaus of this generalized approach it is not neccessary to write more than one property for each logical property of the to be tested function as many different test cases will be generated anyway. \cite{Hughes2006}
+
+\subsection{Property}
+
+A property is defined as a fuction that takes some random test data, provides that test data to the to be tested function and determines afterword weather a general rule about the relation between the random input and the to be tested functions output holds.
+
+\subsection{Input}
+
+To generate a concrete test case from a general property some variing input data is required to pass to the to be tested function. This input data is generated randomly in QuickCheck. Even tho it might be suprising, it turns out that this random approach competes quite well with systematic methods in practice. \cite{Claessen2000}
+
+QuickCheck has no heuristics or assumptions about the possible input data, it is therefore the task of the user to define its structure. This can be done by implementing generators. This enables the user to define the distribution of the test data to model the expected real world input as close as possible.
+
+\section{Practice}
+
+\subsection{Examples}
+
+\subsection{Commercial use}
+
+\subsection{QuickCheck in different languages}
+
+\section{Conclusion}
+
+\newpage
+\section{References}
+\printbibliography[heading=none]
+
+\end{document}
+
+% CITE
+
+%Diese Arbeit \cite{Smith:2012qr} umfasst
+
+% SECTION
+
+%\section{Messung der Rechenzeit einzelner Zellen}
+%\subsection{CustomShell}
+
+% PICTURE
+
+%\begin{figure}[ht]
+%    \caption{Rechenzeiten visualisiert in XSimView}
+%    \centering
+%    \includegraphics[width=0.8\textwidth]{messzeiten.png}
+%\end{figure}
+
+% TABLE
+
+%\begin{tabular}{ l l }
+%    outfiles.c & Filewriter f\"ur die Zeitmessung \\
+%    fluxes.c & Durchf\"uhrung der Zeitmessung \\
+%    cellinfo.h & Speicherung der Zeitmessung \\
+%    globals.h & RecordCellCalculationTime Flag f\"ur Zeitmessung \\
+%    interpreter.c & Erweiterungen des Interpreters \\
+%    wrapper.c & Definition der NONE-Achse \\
+%\end{tabular}
