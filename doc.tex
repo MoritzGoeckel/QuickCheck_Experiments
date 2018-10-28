@@ -163,7 +163,10 @@ To generate a concrete test case from a general property some varying input data
 
 QuickCheck has no heuristics or assumptions about the possible input data, it is therefore the task of the user to define its structure. This can be done by implementing generators. This enables the user to define the distribution of the test data to model the expected real world input as close as possible.
 
-QuickCheck provides a wide variaty of combinable generators which can be used very effectively to model the randomly choosen input data. One of these generators is "choose" which provided two arguments returns a random value between them. This can be used to optimize the previous example "prop_positivePlusOne" by generating only positive input data in the first place. That way we avoid generating test cases that do not contribute the evaluation of the function and therefore will speed up computation time. 
+
+\subsubsection{Basic generators \& forAll}
+
+QuickCheck provides a wide variaty of combinable generators which can be used very effectively to model the randomly choosen input data. One of these generators is "choose" which provided two arguments returns a random value between them. This can be used to optimize the previous example "prop\_positivePlusOne" by generating only positive input data in the first place. That way we avoid generating test cases that do not contribute the evaluation of the function and therefore will speed up computation time. 
 
 \begin{minted}{haskell}
 prop_positivePlusOne :: Property
@@ -180,7 +183,27 @@ The "forAll" function is central to this implementation: It receives an generato
 
 There are many more predefined generators provided by QuickCheck. The most basic generator named "arbitrary" for example generates random values for a given type. "arbitrary :: Int" generates integers for example. If one wants to generate a fixed size list there is the "vectorOf" generator which generates a list of a given size and populates it with the values from a given generator. If one needs a list of random length the "listOf" function comes handy. Many more of those generators can be found in the QuickCheck documentation. \cite{documentation}
 
-FREQUENCY
+\subsubsection{Frequency}
+
+For testing functions one usually creates test inputs that mimics the later expected real input or creates input that puts the to be tested function under maximum pressure to find bugs fast. To be able to do that one might want to define a generator statistically:
+
+\begin{minted}{haskell}
+mostlyPositive :: Gen Int
+mostlyPositive =
+  frequency
+    [ 
+        (8, choose (1, 10)),
+        (1, choose (-10, -1)),
+        (1, return 0)
+    ]
+
+generate (vectorOf 12 mostlyPositive) 
+-- [7,10,4,10,7,4,-8,3,9,1,0,7]
+\end{minted}
+
+This example defines a generator which consists of three generators with assinged probabilities: In 80\% of the cases it is going to choose an integer between 1 and 10, with 10\% probabilitiy it will choose an integer between -10 and -1 and the 0 is choosen with also 10\% probabilitiy. This generator is therefore heighly skewd towards positive numbers but also generates negative numbers ocationally. This is achieved by using the frequency function that takes an array of tuples of the frequency and the generator. To test the generator we did not define property to use it with but instead just created some values with the function "generate".
+
+\subsection{Shrinking}
 forAllShrink
 
 -- STATEFULL TESTING
