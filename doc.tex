@@ -207,18 +207,39 @@ This example defines a generator which consists of three generators with assinge
 
 QuickCheck provides very powerful tools to evaluate the presense of bugs with its generators and properties. A property states a logical rule, an appropriate generator creates test inputs and now we find that a property does not hold. QuickCheck informs us about the input data breaks our property. Finding the mistake in the code can be quite chellenging, espacially if the violating test case is very complex and patterns are therefore hard to find. To help the software developer to understand the bug more easily QuickCheck "shrinks" the violating test case systematically to iterativly find violating test cases that are smaller. QuickCheck shrinks the violating test case until it can not be shrunken further. This minimal violating test case is then given to the user. This method makes finding the error in the code easier after a violating test case has been discovered by QuickCheck. \cite{Claessen2009}
 
--- TODO: example forAllShrink
--- TODO: STATEFULL TESTING
+Shrinking consists of removing method calls and simplifying numbers in violating test cases and evaluating wehether or not the new and simpler test case still violates the property. This can be a very computational expensive endevor and is reported to take up to 80\% of the computation time. This can have quite an impact on computation time, especially when violating test cases are easy to find but hard to simplify. \cite{Hughes:2016}
 
-\section{Practice}
+\begin{minted}{haskell}
+doesNotContain :: [Int] -> Bool
+doesNotContain xs = 
+    not ((elem 7 xs) && (elem 30 xs))
 
-\subsection{Examples}
+quickCheck doesNotContain
+-- Failed! Falsifiable (after 93 tests and 9 shrinks):
+-- [30,7]
+\end{minted}
 
-\subsection{Commercial use}
+This example defines a simple test case in which it assumes that 7 and 30 can never occure in the same list. QuickCheck found a failing test case within 93 tries and then removed iterativly more and more elements from the list that made the test fail. After these 9 shrinks QuickCheck found the simplest failing test case.
 
-\subsection{QuickCheck in different languages}
+\section{Commercial use}
+
+% ERLANG ETC
+% FIND RELEVANT PROJECTS
+
+\section{QuickCheck in different languages}
+%-- TODO: STATEFULL TESTING
+
+The section "Theory" utilized exclusively Haskell to show the main ideas behind QuickCheck. This is because QuickCheck has been originally implemented in Haskell. Because of this Haskell is rooted in functional programming but its main ideas still have been translated into other languages and paradigms. As functional programming avoids uncontrolled side effects, it is known for beeing better testable. Therefore the question whether or not the ideas of QuickCheck can be applied to imperateive languages arises. This chapter is about how QuickCheck can be used in other languages.
+
+\subsection{Java}
+\subsection{Go}
+\subsection{C \& C++}
+\subsection{JavaScript \& Node.js}
 
 \section{Conclusion}
+
+% EXAMPLE SECTION
+% PRACTICE SECTION
 
 \newpage
 \section{References}
