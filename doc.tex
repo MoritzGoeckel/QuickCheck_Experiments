@@ -183,7 +183,7 @@ The "forAll" function is central to this implementation: It receives an generato
 
 There are many more predefined generators provided by QuickCheck. The most basic generator named "arbitrary" for example generates random values for a given type. "arbitrary :: Int" generates integers for example. If one wants to generate a fixed size list there is the "vectorOf" generator which generates a list of a given size and populates it with the values from a given generator. If one needs a list of random length the "listOf" function comes handy. Many more of those generators can be found in the QuickCheck documentation. \cite{documentation}
 
-\subsubsection{Frequency}
+\subsubsection{Frequency generator}
 
 For testing functions one usually creates test inputs that mimics the later expected real input or creates input that puts the to be tested function under maximum pressure to find bugs fast. To be able to do that one might want to define a generator statistically:
 
@@ -204,9 +204,11 @@ generate (vectorOf 12 mostlyPositive)
 This example defines a generator which consists of three generators with assinged probabilities: In 80\% of the cases it is going to choose an integer between 1 and 10, with 10\% probabilitiy it will choose an integer between -10 and -1 and the 0 is choosen with also 10\% probabilitiy. This generator is therefore heighly skewd towards positive numbers but also generates negative numbers ocationally. This is achieved by using the frequency function that takes an array of tuples of the frequency and the generator. To test the generator we did not define property to use it with but instead just created some values with the function "generate".
 
 \subsection{Shrinking}
-forAllShrink
 
--- STATEFULL TESTING
+QuickCheck provides very powerful tools to evaluate the presense of bugs with its generators and properties. A property states a logical rule, an appropriate generator creates test inputs and now we find that a property does not hold. QuickCheck informs us about the input data breaks our property. Finding the mistake in the code can be quite chellenging, espacially if the violating test case is very complex and patterns are therefore hard to find. To help the software developer to understand the bug more easily QuickCheck "shrinks" the violating test case systematically to iterativly find violating test cases that are smaller. QuickCheck shrinks the violating test case until it can not be shrunken further. This minimal violating test case is then given to the user. This method makes finding the error in the code easier after a violating test case has been discovered by QuickCheck. \cite{Claessen2009}
+
+-- TODO: example forAllShrink
+-- TODO: STATEFULL TESTING
 
 \section{Practice}
 
