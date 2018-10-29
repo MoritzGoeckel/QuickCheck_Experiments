@@ -62,6 +62,8 @@ A tool for random testing} % Subtitle
 
 \section{Abstract}
 
+% FRAGESTELLUNG
+
 \section{Introduction}
 \subsection{The problem with testing}
 
@@ -73,17 +75,19 @@ We find that in very large complex systems it is often no longer feasible to gai
 
 \subsection{Random test generation}
 
-One way evaluate a softwares correctness is to keep and eye on irregularities while manually testing it. This way is very time consuming as every test case has to be conducted by a person. It can take months to test a big software system this way. Because of this human element, manual testing is also very error prone and therefore not reliable. As an addition to manual testing automated testing has beed widely adopted in the industry. With automated testing bigger test coverage can be achieved and a test runs can be conducted within minutes or hours instead of the months it would take to manually test the software. Unfortunately the testing process is still one of the most expensive parts of software development, even with automated testing. Not seldom the testing efforts account for about half of the development costs. \cite{Claessen2000} The logical next step to reduce these costs after automated testing is the automated generation of test cases. The utilization of automated generation of test cases may lead to further reduced testing effort or the possibility to gain more test coverage in less time.
+One way evaluate a softwares correctness is to keep and eye on irregularities while manually testing it. This way is very time consuming as every test case has to be conducted by a person. It can take months to test a big software system this way. \cite{Arts06} Because of this human element, manual testing is also very error prone and therefore not reliable. As an addition to manual testing automated testing has beed widely adopted in the industry. With automated testing bigger test coverage can be achieved and a test runs can be conducted within minutes or hours instead of the months it would take to manually test the software. Unfortunately the testing process is still one of the most expensive parts of software development, even with automated testing. Not seldom the testing efforts account for about half of the development costs. \cite{Claessen2000} The logical next step to reduce these costs after automated testing is the automated generation of test cases. The utilization of automated generation of test cases may lead to further reduced testing effort or the possibility to gain more test coverage in less time.
 
 \section{Theory}
 
-The most expensive part of software testing is not to run or to evaluate them, most of the time the most expensive part is writing the test cases. QuickCheck tackles that problem by letting the software developer write generalized test functions of which each covers many test cases. These generalized test functions in QuickCheck are called properties. \cite{Hughes2010} Because of this generalized approach it is not necessary to write more than one property for each logical property of the to be tested function as many different test cases will be generated anyway. \cite{Hughes2006}
+QuickCheck has three core pillarstones: Properties which define a general rule about the to be tested code, generators which create controllable random input data to create test cases and "shrinking" which reduces failing test cases to an minimal test case to aid diagnosis. These three concepts will be shown in this chapter.
 
 \subsection{Properties}
 
+The most expensive part of software testing is not to run or to evaluate them, most of the time the most expensive part is writing the test cases. QuickCheck tackles that problem by letting the software developer write generalized test functions of which each covers many test cases. These generalized test functions in QuickCheck are called properties. \cite{Hughes2010} Because of this generalized approach it is not necessary to write more than one property for each logical property of the to be tested function as many different test cases will be generated anyway. \cite{Hughes2006}
+
 A property is defined as a function that takes some random test data, provides that test data to the to be tested function and determines afterword whether a general rule about the relation between the random input and the to be tested functions output holds.
 
-\subsubsection{Defining a property}
+\subsubsection{Defining properties}
 
 For example imagine we want to test the "sum" function. We know that the sum of the elements in an array is always the same, no matter the order of the array. We can formulate this kind of logical assertion as a property in Haskell:
 
@@ -223,14 +227,37 @@ This example defines a simple test case in which it assumes that 7 and 30 can ne
 
 \section{Commercial use}
 
-% ERLANG ETC
-% FIND RELEVANT PROJECTS
+A commercial version named Quviq QuickCheck has been created by Claessen and Hughes, the former authors of QuickCheck. Quviq QuickCheck was first used for testing the Magaco protocol in a case study in 2006 at Ericson. The stated goal was to evaluate Quviq QuickCheck regarding its effectiveness in an industrial setting. The telecomunication sector was choose because as the communication protocolls are commonly both very complex and also quite well specified. The assumption was that this kind of enviroment is perfect for a QuickCheck-like testing approach. \cite{Arts06}
+
+\subsection{Language}
+
+In contrast to QuickCheck, which was written in Haskell, Quviq QuickCheck was written in Erlang as this language was wider spread in the industry and supported more natural state based testing. Even though some parts of the to be tested software in the Ericson case study where also written in Elrang, it is important to note that a black-box approach was used that only generated messages and analysed replies. Therefore the language of the to be tested software was actually no relevant for the project. \cite{Arts06} 
+
+\subsection{Positive \& negative testing}
+
+To conduct the testing both positive and negative test cases have been generated by Quviq QuickCheck. Positive test cases are ones where valid messages have been generated and the reply of the to be system had to be correct to pass the test. Negative test cases were created by generating and sending invalid messages to the system and then expecting a negative response from the system without it crashing or entering an invalid state. The destiction between negative and positive test cases has to be made quite clear in QuickCheck as they have different criteria for passing. The challanging part of the testing with QuickCheck in such a setting is to be able to randomly generate messages and to predict whether or not it is valid to evaluate the response of the system. This requires the test engineer to know and implement the specification of the to be tested system quite precicly. \cite{Arts06}
+
+\subsection{Testing stateful systems}
+
+Stateless systems are usually assumed to be better testable. But even though the system in the Ericson case study was mostly statless some bugs still only showed when executing a certain combination of commands in sequence. Quviq QuickCheck therefore had to be able to test systems that also relay on internal state. Fortunatly this is possible in QuickCheck: Instead of generating the input parameters for a function call, an array of to be called functions and the apropriate input parameters were generated. This yields a sequence of commands (with parameters) that can be executed on the to be tested system. The response of the system can then be anlysed either after every command or at the end of the sequence. The elegance of this approach lies in the ability to use QuickChecks "shrinking" on the command sequence after finding a violating test case. \cite{Arts06} 
+
+\subsection{Results}
+
+The authors of Quviq QuickCheck claim that their software can be used effectively in practice. They reported on finding very subtile bugs that manual testing and automated testing was unable to find. One of those bugs required seven specific commands with specific parameters to be executed in sequence to show. This again illustrates the usefulness of shrinking in QuickCheck as the first found sequence that caused that bug was 160 commands long but got shrunken down to only seven essential commands. Such a bug would be very hard to find other testing methods. \cite{Arts06}
+
+On the other hand it turns out that after QuickCheck found a bug, it tends to allways find it agian. Therefore the bug either has to be fixed or the test case has to be addapted to continue testing. Before that testing with QuickCheck can hardly continue. The creators of QuickCheck state "QuickCheck is very likely to \[always\] report the most common bug on every run". \cite{Arts06}
+
+It is also stated that the specification of the to be tested system needs to be consistent, unambigous and the testing team has to understand it very well. Every ambiguity or inconsistency in the specification will eventually be found by QuickCheck and will look like a bug. This however should be the case with every thorough testing system and should therefore not been seen as a downside. \cite{Arts06}
+
+% TODO FIND OTHER RELEVANT PROJECTS
 
 \section{QuickCheck in different languages}
-%-- TODO: STATEFULL TESTING
 
-The section "Theory" utilized exclusively Haskell to show the main ideas behind QuickCheck. This is because QuickCheck has been originally implemented in Haskell. Because of this Haskell is rooted in functional programming but its main ideas still have been translated into other languages and paradigms. As functional programming avoids uncontrolled side effects, it is known for beeing better testable. Therefore the question whether or not the ideas of QuickCheck can be applied to imperateive languages arises. This chapter is about how QuickCheck can be used in other languages.
+%-- TODO: STATEFULL TESTING EXAMPLE
 
+The section "Theory" utilized exclusively Haskell to show the main ideas behind QuickCheck. This is because QuickCheck has been originally implemented in Haskell. But even though QuickCheck is rooted in functional programming, its main ideas still have been translated into many other languages and paradigms. As functional programming avoids uncontrolled side effects, it is known for beeing better testable. Therefore the question whether or not the ideas of QuickCheck can be applied to imperateive languages arises. This chapter is about how QuickCheck can be used in other languages.
+
+\subsection{Erlang}
 \subsection{Java}
 \subsection{Go}
 \subsection{C \& C++}
@@ -238,6 +265,7 @@ The section "Theory" utilized exclusively Haskell to show the main ideas behind 
 
 \section{Conclusion}
 
+% IDEAS
 % EXAMPLE SECTION
 % PRACTICE SECTION
 
@@ -248,16 +276,13 @@ The section "Theory" utilized exclusively Haskell to show the main ideas behind 
 \end{document}
 
 % CITE
-
 %Diese Arbeit \cite{Smith:2012qr} umfasst
 
 % SECTION
-
 %\section{Messung der Rechenzeit einzelner Zellen}
 %\subsection{CustomShell}
 
 % PICTURE
-
 %\begin{figure}[ht]
 %    \caption{Rechenzeiten visualisiert in XSimView}
 %    \centering
@@ -265,7 +290,6 @@ The section "Theory" utilized exclusively Haskell to show the main ideas behind 
 %\end{figure}
 
 % TABLE
-
 %\begin{tabular}{ l l }
 %    outfiles.c & Filewriter f\"ur die Zeitmessung \\
 %    fluxes.c & Durchf\"uhrung der Zeitmessung \\
