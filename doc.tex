@@ -286,15 +286,17 @@ This first example is similar to the first QuickCheck example in Haskell in the 
 
 \subsubsection{Generators}
 
-The next example makes use of some more generator annotations to create a quite complex specification of the input data:
+The next example makes use of some more generator annotations to create a quite complex specification of the input data: \cite{jqwikdoc}
 
 \begin{minted}{java}
 @Property
-void uniqueInList(@ForAll @Size(5) List<@IntRange(min = 0, max = 10) @Unique Integer> aList) {
+void uniqueInList(@ForAll @Size(5) 
+                  List<@IntRange(min = 0, max = 10) @Unique Integer> aList) {
+    
     Assertions.assertThat(aList).doesNotHaveDuplicates();
     Assertions.assertThat(aList).allMatch(anInt -> anInt >= 0 && anInt <= 10);
 }
-\end{minted} \cite{jqwikdoc}
+\end{minted}
 
 The input of this property will always be a list with unique integer values between zero and then of size 5. This shows the power and expressiveness of this approach. Also this example shows that in Jqwik it is common to use assertions to signal a failing test instead of returning a boolean.
 
@@ -302,7 +304,9 @@ The following example shows how to create more custom generators in Jqwik. Gener
 
 \begin{minted}{java}
 @Property
-boolean testingGenerators(@ForAll("names") String name, @ForAll("oddNumbers") int num) {
+boolean testingGenerators(@ForAll("names") String name, 
+                          @ForAll("oddNumbers") int num) {
+
     Statistics.collect(name);
     return num % 2 == 1;
 }
@@ -386,7 +390,9 @@ Arbitrary<ActionSequence<MyList>> listActionSequences() {
     return Arbitraries.sequences(
             Arbitraries.oneOf(
                     Arbitraries.constant(new RemoveAction()),
-                    Arbitraries.integers().between(0, 100).map(Object::toString).map(AddAction::new)
+                    Arbitraries.integers().between(0, 100)
+                                          .map(Object::toString)
+                                          .map(AddAction::new)
             )
     );
 }
