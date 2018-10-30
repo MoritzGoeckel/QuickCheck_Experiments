@@ -62,10 +62,8 @@ A tool for random testing} % Subtitle
 
 \section{Abstract}
 
-% FRAGESTELLUNG
-
 \section{Introduction}
-\subsection{The problem with testing}
+\subsection{Testing large systems}
 
 Testing is the primary method to evaluate the correctness of software today. \cite{Ammann2016} Even though exhaustive testing is possible in many cases and majority of bugs can be triggered by relatively few test cases, \cite{Kuhn2004} the required effort to find these test cases can be high. In practice the time spend writing code is not seldom matched by the time spend on finding bugs and creating tests.
 
@@ -73,13 +71,17 @@ The problem that arises with testing is that the amount of required test cases f
 
 We find that in very large complex systems it is often no longer feasible to gain good test coverage by writing test cases manually. Another way of testing needs to be found. 
 
-\subsection{Random test generation}
+\subsection{Random testing}
 
 One way evaluate a softwares correctness is to keep and eye on irregularities while manually testing it. This way is very time consuming as every test case has to be conducted by a person. It can take months to test a big software system this way. \cite{Arts06} Because of this human element, manual testing is also very error prone and therefore not reliable. As an addition to manual testing automated testing has beed widely adopted in the industry. With automated testing bigger test coverage can be achieved and a test runs can be conducted within minutes or hours instead of the months it would take to manually test the software. Unfortunately the testing process is still one of the most expensive parts of software development, even with automated testing. Not seldom the testing efforts account for about half of the development costs. \cite{Claessen2000} The logical next step to reduce these costs after automated testing is the automated generation of test cases. The utilization of automated generation of test cases may lead to further reduced testing effort or the possibility to gain more test coverage in less time.
 
-\section{Theory}
+\subsection{Structure}
 
-QuickCheck has three core pillarstones: Properties which define a general rule about the to be tested code, generators which create controllable random input data to create test cases and "shrinking" which reduces failing test cases to an minimal test case to aid diagnosis. These three concepts will be shown in this chapter.
+After the difficulties in testing large systems were stated and the idea of random testing was proposed in the introduction, this work is aiming to give an overview over the ideas of QuickCheck. The theory is aided by examples in Haskell, as this is the language QuickCheck was originally written in. This work will then give an example on how QuickCheck was used in a commercial setting and how it performed. In the last part of this work it is evaluated how the ideas of QuickCheck translate to another language of another paradigm. As an example Java was chosen as it is commonly used in the industry and is an imperative language in contrast to Haskell.
+
+\section{The idea of QuickCheck}
+
+QuickCheck has three core pillars: Properties which define a general rule about the to be tested code, generators which create controllable random input data to create test cases and "shrinking" which reduces failing test cases to an minimal test case to aid diagnosis. These three concepts will be shown in this chapter.
 
 \subsection{Properties}
 
@@ -135,7 +137,7 @@ quickCheck prop_sumRev
 -- OK, passed 100 tests (7\% Array empty).
 \end{minted}
 
-As we can see in the output, 7 of the 100 test cases have been conducted with either null or an empty array. This value changes from test run to test run because the generation of input data is random. It might be useful to know these things as these kinds of tests do not really test the sum function like intendet. Now lets look at "collect":
+As we can see in the output, 7 of the 100 test cases have been conducted with either null or an empty array. This value changes from test run to test run because the generation of input data is random. It might be useful to know these things as these kinds of tests do not really test the sum function like intended. Now lets look at "collect":
 
 \begin{minted}{haskell}
 prop_sumRev :: [Int] -> Property
@@ -159,7 +161,7 @@ Note that because the output of QuickCheck contains more information about the t
 
 \subsubsection{Infinite data structures}
 
-As QuickCheck was initially implemented in Haskell and Haskell supports infinite data structures, therefore QuickCheck also in theory enables developers to test infinte data structures. Because infinite data structures are only feasable with lazy evaluation and can never be fully evaluated, they of course can also never be fully tested. QuickCheck solves this problem by making the assumption that if a finite ammount of elements of an infinte data structure are valid, then the entire data structure is valid. So the solution in practice is to just convert an infinite data structure into a finite one by taking n elements and then evaluating the correctness of the fininte data structure. The number n is thereby also randomly generated by QuickCheck. If the rule holds for the finite data structure we assume that it also holds for the infinte one. \cite{Claessen2000}
+As QuickCheck was initially implemented in Haskell and Haskell supports infinite data structures, therefore QuickCheck also in theory enables developers to test infinite data structures. Because infinite data structures are only feasible with lazy evaluation and can never be fully evaluated, they of course can also never be fully tested. QuickCheck solves this problem by making the assumption that if a finite amount of elements of an infinite data structure are valid, then the entire data structure is valid. So the solution in practice is to just convert an infinite data structure into a finite one by taking n elements and then evaluating the correctness of the finite data structure. The number n is thereby also randomly generated by QuickCheck. If the rule holds for the finite data structure we assume that it also holds for the infinite one. \cite{Claessen2000}
 
 \subsection{Generators}
 
@@ -170,7 +172,7 @@ QuickCheck has no heuristics or assumptions about the possible input data, it is
 
 \subsubsection{Basic generators \& forAll}
 
-QuickCheck provides a wide variaty of combinable generators which can be used very effectively to model the randomly choosen input data. One of these generators is "choose" which provided two arguments returns a random value between them. This can be used to optimize the previous example "prop\_positivePlusOne" by generating only positive input data in the first place. That way we avoid generating test cases that do not contribute the evaluation of the function and therefore will speed up computation time. 
+QuickCheck provides a wide variety of combinable generators which can be used very effectively to model the randomly chosen input data. One of these generators is "choose" which provided two arguments returns a random value between them. This can be used to optimize the previous example "prop\_positivePlusOne" by generating only positive input data in the first place. That way we avoid generating test cases that do not contribute the evaluation of the function and therefore will speed up computation time. 
 
 \begin{minted}{haskell}
 prop_positivePlusOne :: Property
@@ -205,13 +207,13 @@ generate (vectorOf 12 mostlyPositive)
 -- [7,10,4,10,7,4,-8,3,9,1,0,7]
 \end{minted}
 
-This example defines a generator which consists of three generators with assinged probabilities: In 80\% of the cases it is going to choose an integer between 1 and 10, with 10\% probabilitiy it will choose an integer between -10 and -1 and the 0 is choosen with also 10\% probabilitiy. This generator is therefore heighly skewd towards positive numbers but also generates negative numbers ocationally. This is achieved by using the frequency function that takes an array of tuples of the frequency and the generator. To test the generator we did not define property to use it with but instead just created some values with the function "generate".
+This example defines a generator which consists of three generators with assigned probabilities: In 80\% of the cases it is going to choose an integer between 1 and 10, with 10\% probability it will choose an integer between -10 and -1 and the 0 is chosen with also 10\% probability. This generator is therefore highly skewed towards positive numbers but also generates negative numbers occasionally. This is achieved by using the frequency function that takes an array of tuples of the frequency and the generator. To test the generator we did not define property to use it with but instead just created some values with the function "generate".
 
 \subsection{Shrinking}
 
-QuickCheck provides very powerful tools to evaluate the presense of bugs with its generators and properties. A property states a logical rule, an appropriate generator creates test inputs and now we find that a property does not hold. QuickCheck informs us about the input data breaks our property. Finding the mistake in the code can be quite chellenging, espacially if the violating test case is very complex and patterns are therefore hard to find. To help the software developer to understand the bug more easily QuickCheck "shrinks" the violating test case systematically to iterativly find violating test cases that are smaller. QuickCheck shrinks the violating test case until it can not be shrunken further. This minimal violating test case is then given to the user. This method makes finding the error in the code easier after a violating test case has been discovered by QuickCheck. \cite{Claessen2009}
+QuickCheck provides very powerful tools to evaluate the presence of bugs with its generators and properties. A property states a logical rule, an appropriate generator creates test inputs and now we find that a property does not hold. QuickCheck informs us about the input data breaks our property. Finding the mistake in the code can be quite challenging, especially if the violating test case is very complex and patterns are therefore hard to find. To help the software developer to understand the bug more easily QuickCheck "shrinks" the violating test case systematically to iteratively find violating test cases that are smaller. QuickCheck shrinks the violating test case until it can not be shrunken further. This minimal violating test case is then given to the user. This method makes finding the error in the code easier after a violating test case has been discovered by QuickCheck. \cite{Claessen2009}
 
-Shrinking consists of removing method calls and simplifying numbers in violating test cases and evaluating wehether or not the new and simpler test case still violates the property. This can be a very computational expensive endevor and is reported to take up to 80\% of the computation time. This can have quite an impact on computation time, especially when violating test cases are easy to find but hard to simplify. \cite{Hughes:2016}
+Shrinking consists of removing method calls and simplifying numbers in violating test cases and evaluating whether or not the new and simpler test case still violates the property. This can be a very computational expensive endeavor and is reported to take up to 80\% of the computation time. This can have quite an impact on computation time, especially when violating test cases are easy to find but hard to simplify. \cite{Hughes:2016}
 
 \begin{minted}{haskell}
 doesNotContain :: [Int] -> Bool
@@ -223,52 +225,47 @@ quickCheck doesNotContain
 -- [30,7]
 \end{minted}
 
-This example defines a simple test case in which it assumes that 7 and 30 can never occure in the same list. QuickCheck found a failing test case within 93 tries and then removed iterativly more and more elements from the list that made the test fail. After these 9 shrinks QuickCheck found the simplest failing test case.
+This example defines a simple test case in which it assumes that 7 and 30 can never occur in the same list. QuickCheck found a failing test case within 93 tries and then removed iteratively more and more elements from the list that made the test fail. After these 9 shrinks QuickCheck found the simplest failing test case.
 
 \section{Commercial use}
 
-A commercial version named Quviq QuickCheck has been created by Claessen and Hughes, the former authors of QuickCheck. Quviq QuickCheck was first used for testing the Magaco protocol in a case study in 2006 at Ericson. The stated goal was to evaluate Quviq QuickCheck regarding its effectiveness in an industrial setting. The telecomunication sector was choose because as the communication protocolls are commonly both very complex and also quite well specified. The assumption was that this kind of enviroment is perfect for a QuickCheck-like testing approach. \cite{Arts06}
+A commercial version named Quviq QuickCheck has been created by Claessen and Hughes, the former authors of QuickCheck. Quviq QuickCheck was first used for testing the Magaco protocol in a case study in 2006 at Ericson. The stated goal was to evaluate Quviq QuickCheck regarding its effectiveness in an industrial setting. The telecommunication sector was choose because as the communication protocols are commonly both very complex and also quite well specified. The assumption was that this kind of environment is perfect for a QuickCheck-like testing approach. This chapter is going to be about that case study. \cite{Arts06}
 
-\subsection{Language}
+\subsection{Erlang}
 
-In contrast to QuickCheck, which was written in Haskell, Quviq QuickCheck was written in Erlang as this language was wider spread in the industry and supported more natural state based testing. Even though some parts of the to be tested software in the Ericson case study where also written in Elrang, it is important to note that a black-box approach was used that only generated messages and analysed replies. Therefore the language of the to be tested software was actually no relevant for the project. \cite{Arts06} 
+In contrast to QuickCheck, which was written in Haskell, Quviq QuickCheck was written in Erlang as this language was wider spread in the industry and supported more natural state based testing. Even though some parts of the to be tested software in the Ericson case study where also written in Erlang, it is important to note that a black-box approach was used that only generated messages and analysed replies. Therefore the language of the to be tested software was actually no relevant for the project. \cite{Arts06} 
 
 \subsection{Positive \& negative testing}
 
-To conduct the testing both positive and negative test cases have been generated by Quviq QuickCheck. Positive test cases are ones where valid messages have been generated and the reply of the to be system had to be correct to pass the test. Negative test cases were created by generating and sending invalid messages to the system and then expecting a negative response from the system without it crashing or entering an invalid state. The destiction between negative and positive test cases has to be made quite clear in QuickCheck as they have different criteria for passing. The challanging part of the testing with QuickCheck in such a setting is to be able to randomly generate messages and to predict whether or not it is valid to evaluate the response of the system. This requires the test engineer to know and implement the specification of the to be tested system quite precicly. \cite{Arts06}
+To conduct the testing both positive and negative test cases have been generated by Quviq QuickCheck. Positive test cases are ones where valid messages have been generated and the reply of the to be system had to be correct to pass the test. Negative test cases were created by generating and sending invalid messages to the system and then expecting a negative response from the system without it crashing or entering an invalid state. The distinction between negative and positive test cases has to be made quite clear in QuickCheck as they have different criteria for passing. The challenging part of the testing with QuickCheck in such a setting is to be able to randomly generate messages and to predict whether or not it is valid to evaluate the response of the system. This requires the test engineer to know and implement the specification of the to be tested system quite precisely. \cite{Arts06}
 
-\subsection{Testing stateful systems}
+\subsection{Stateful systems}
 
-Stateless systems are usually assumed to be better testable. But even though the system in the Ericson case study was mostly statless some bugs still only showed when executing a certain combination of commands in sequence. Quviq QuickCheck therefore had to be able to test systems that also relay on internal state. Fortunatly this is possible in QuickCheck: Instead of generating the input parameters for a function call, an array of to be called functions and the apropriate input parameters were generated. This yields a sequence of commands (with parameters) that can be executed on the to be tested system. The response of the system can then be anlysed either after every command or at the end of the sequence. The elegance of this approach lies in the ability to use QuickChecks "shrinking" on the command sequence after finding a violating test case. \cite{Arts06} 
+Stateless systems are usually assumed to be better testable. But even though the system in the Ericson case study was mostly stateless some bugs still only showed when executing a certain combination of commands in sequence. Quviq QuickCheck therefore had to be able to test systems that also relay on internal state. Fortunately this is possible in QuickCheck: Instead of generating the input parameters for a function call, an array of to be called functions and the appropriate input parameters were generated. This yields a sequence of commands (with parameters) that can be executed on the to be tested system. The response of the system can then be analysed either after every command or at the end of the sequence. The elegance of this approach lies in the ability to use QuickChecks "shrinking" on the command sequence after finding a violating test case. \cite{Arts06} 
+
+Testing a stateful system is going to be further discussed with an concrete example later in the section "Stateful testing".
 
 \subsection{Results}
 
 The authors of Quviq QuickCheck claim that their software can be used effectively in practice. They reported on finding very subtile bugs that manual testing and automated testing was unable to find. One of those bugs required seven specific commands with specific parameters to be executed in sequence to show. This again illustrates the usefulness of shrinking in QuickCheck as the first found sequence that caused that bug was 160 commands long but got shrunken down to only seven essential commands. Such a bug would be very hard to find other testing methods. \cite{Arts06}
 
-On the other hand it turns out that after QuickCheck found a bug, it tends to allways find it agian. Therefore the bug either has to be fixed or the test case has to be addapted to continue testing. Before that testing with QuickCheck can hardly continue. The creators of QuickCheck state "QuickCheck is very likely to report the most common bug on every run". \cite{Arts06}
+On the other hand it turns out that after QuickCheck found a bug, it tends to always find it again. Therefore the bug either has to be fixed or the test case has to be adapted to continue testing. Before that testing with QuickCheck can hardly continue. The creators of QuickCheck state "QuickCheck is very likely to report the most common bug on every run". \cite{Arts06}
 
-It is also stated that the specification of the to be tested system needs to be consistent, unambigous and the testing team has to understand it very well. Every ambiguity or inconsistency in the specification will eventually be found by QuickCheck and will look like a bug. This however should be the case with every thorough testing system and should therefore not been seen as a downside. \cite{Arts06}
+It is also stated that the specification of the to be tested system needs to be consistent, unambiguous and the testing team has to understand it very well. Every ambiguity or inconsistency in the specification will eventually be found by QuickCheck and will look like a bug. This however should be the case with every thorough testing system and should therefore not been seen as a downside. \cite{Arts06}
 
 % TODO FIND OTHER RELEVANT PROJECTS
 
-\section{QuickCheck in different languages}
+\section{QuickCheck in Java}
 
-%-- TODO: STATEFULL TESTING EXAMPLE
+The section "Theory" utilized exclusively Haskell to show the main ideas behind QuickCheck. This is because QuickCheck has been originally implemented in Haskell. But even though QuickCheck is rooted in functional programming, its main ideas still have been translated into many other languages and paradigms. As functional programming avoids uncontrolled side effects, it is known for being better testable. Therefore the question whether or not the ideas of QuickCheck can be applied to imperative languages arises. This chapter is about how QuickCheck can be used in other languages.
 
-The section "Theory" utilized exclusively Haskell to show the main ideas behind QuickCheck. This is because QuickCheck has been originally implemented in Haskell. But even though QuickCheck is rooted in functional programming, its main ideas still have been translated into many other languages and paradigms. As functional programming avoids uncontrolled side effects, it is known for beeing better testable. Therefore the question whether or not the ideas of QuickCheck can be applied to imperateive languages arises. This chapter is about how QuickCheck can be used in other languages.
+Java is at the time of writing the most popular programming language according to the TIOBE Index. \cite{tiobe2018} Even though such rankings should always be "taken with a grain of salt" it is still agreed upon that Java is a quite widely used language today. This is why it is interesting to evaluate whether or not the ideas of QuickCheck can be applied to modern Java today.
 
-\subsection{Erlang}
-% TODO
+\subsection{Jqwik}
 
-\subsection{Java}
+In the research for this work already seven implementations of QuickCheck for Java have been found. Some ar no longer under development and the amount of provided functionalities varies. But anyhow its surprising to find such a variety of implementations of the QuickCheck idea. For the sake of providing some insights how the QuickCheck ideas might look in a Java environment the Jqwik \cite{jqwik} has been chosen. Jqwik is a convenient to use and feature rich software package with an exceptional documentation that makes good use of the Java features to implement the ideas of QuickCheck. These are the reasons why Jqwik has been chosen for this work.
 
-Java is at the time of writing the most popular programming language according to the TIOBE Index. \cite{tiobe2018} Even though such rankings should always be "taken with a grain of salt" it is still agreed upon that Java is a quite widly used language today. This is why it is interesting to evaluate whether or not the ideas of QuickCheck can be applied to modern Java today.
-
-\subsubsection{Jqwik}
-
-In the research for this work already seven implementations of QuickCheck for Java have been found. Some ar no longer under developement and the amount of provided functuonalities varies. But anyhow its suprising to find such a viarity of implementations of the QuickCheck idea. For the sake of providing some insights how the QuickCheck ideas might look in a Java environment the Jqwik \cite{jqwik} has been choosen. Jqwik is a convinient to use and feature rich software package with an exceptional documentation that makes good use of the Java features to implement the ideas of QuickCheck. These are the reasons why Jqwik has been choosen for this work.
-
-\subsubsection{Property}
+\subsection{Property}
 
 In Java we have to first create a class in order to define a property inside it as a method, just like in JUnit, one of the most commonly used testing libraries for Java. To mark the method as a property annotations are used. In contrast to Haskell we no longer run the tests by calling quickCheck with the method as parameter, we just run the test suite. 
 
@@ -282,9 +279,9 @@ boolean prop_positivePlusOne(@ForAll @IntRange(min = 0, max = 100) int num) {
 }
 \end{minted}
 
-This first example is similar to the first QuickCheck example in Haskell in the beginning of this work. It is assumed that the input parameter is greater than one or else we discard the test case. This is equivelant to the conditional property in Haskell. Also shown in this example is the previously presented collect method that generates some statistics about the test run that are going to be printed after completion. The generation of input data is manipulated by providing optional annotations. In this example the IntRage annotation is used to specify the min and max value of the input. This example shows how the ideas and also the nomenclature of QuickCheck is implemented quite similar and intuitivly by Jqwik in Java.
+This first example is similar to the first QuickCheck example in Haskell in the beginning of this work. It is assumed that the input parameter is greater than one or else we discard the test case. This is equivalent to the conditional property in Haskell. Also shown in this example is the previously presented collect method that generates some statistics about the test run that are going to be printed after completion. The generation of input data is manipulated by providing optional annotations. In this example the IntRage annotation is used to specify the min and max value of the input. This example shows how the ideas and also the nomenclature of QuickCheck is implemented quite similar and intuitively by Jqwik in Java.
 
-\subsubsection{Generators}
+\subsection{Generators}
 
 The next example makes use of some more generator annotations to create a quite complex specification of the input data: \cite{jqwikdoc}
 
@@ -328,9 +325,9 @@ Arbitrary<Integer> oddNumbers() {
 
 Note that this example uses the previously presented frequency method that works just like the one in Haskell and that the Arbitraries class utilizes Java streams for some of its predefined generators.
 
-\subsubsection{Steful testing}
+\subsection{Stateful testing}
 
-As Java is a imperative object oriented language, java applications are inherently stateful. Jqwik supports testing stateful methods in a quite similar way like described in the section "Testing stateful systems" in Haskell. Just to recap, in essence Actions need to be defined that can be executed on the to be tested object. One test case consists of a list of random length containing a rendom sequence of these actions instaciated with random paramters. After the execution of each action the state of the to be tested object has to be evaluated to determine whether irregularities occured. Here an example:
+As Java is a imperative object oriented language, java applications are inherently stateful. Jqwik supports testing stateful methods in a quite similar way like described in the section "Testing stateful systems" in Haskell. Just to recap, in essence Actions need to be defined that can be executed on the to be tested object. One test case consists of a list of random length containing a random sequence of these actions instantiated with random parameters. After the execution of each action the state of the to be tested object has to be evaluated to determine whether irregularities occurred. Here an example:
 
 \begin{minted}{java}
 class MyList {
@@ -346,7 +343,7 @@ class MyList {
 }
 \end{minted} 
 
-Here we have an simple data structure with an obvious bug, "remove()" does not work if "10" has been added before. Now we create the actions for to test this data strucutre:
+Here we have an simple data structure with an obvious bug, "remove()" does not work if "10" has been added before. Now we create the actions for to test this data structure:
 
 \begin{minted}{java}
 class AddAction implements Action<MyList> {
@@ -398,7 +395,7 @@ Arbitrary<ActionSequence<MyList>> listActionSequences() {
 }
 \end{minted} 
 
-This piece of code may look a bit dounting at first, but its actually quite stright forward as soon as one get comfortable with generators. Here the goal is to define a generator for sequences of the two previously defined actions. To that end predifined generators have been combined to fulfill that exact need. First (from innermost) two action generators are defined. The first one is trivial: Its a constant generator that always returns a new instace of a "RemoveAction". The second one is more complex: Integers from the predefined generator are retrieved, filtered for the ones between 0 and 100, converted to a string and then for each of these a new "AddAction" gets instaciated. The "AddAction" gets the strings provided via its constructor. On the next level a random one of these two just defined generators gets choosen repeatitly as elements for a sequence of random length. Now the sequence of actions is defined and it just needs to be applied to the data structure in a property:
+This piece of code may look a bit daunting at first, but its actually quite straight forward as soon as one gets comfortable with generators. Here the goal is to define a generator for sequences of the two previously defined actions. To that end predefined generators have been combined to fulfill that exact need. First (from innermost) two action generators are defined. The first one is trivial: Its a constant generator that always returns a new instance of a "RemoveAction". The second one is more complex: Integers from the predefined generator are retrieved, filtered for the ones between 0 and 100, converted to a string and then for each of these a new "AddAction" gets instantiated. The "AddAction" gets the strings provided via its constructor. On the next level a random one of these two just defined generators gets chosen repeatedly as elements for a sequence of random length. Now the sequence of actions is defined and it just needs to be applied to the data structure in a property:
 
 \begin{minted}{java}
 @Property
@@ -407,7 +404,7 @@ void checkList(@ForAll("listActionSequences") ActionSequence<MyList> actions) {
 }
 \end{minted} 
 
-This one is simple. A property gets defined that retreives action sequences from the previously defined generator "listActionSequences" and runs it against a new instace of the to be tested data structure. The following output informs us about a found bug:
+This one is simple. A property gets defined that retrieves action sequences from the previously defined generator "listActionSequences" and runs it against a new instance of the to be tested data structure. The following output informs us about a found bug:
 
 \begin{minted}{txt}
 timestamp = 2018-10-29T20:56:05.363094
@@ -429,21 +426,18 @@ to be equal to:
 but was not.
 \end{minted}
 
-The implementation of the data structure had a bug that Jqwik found after 13 tests. The value of "originalSample" shows how complex that first failing test case was, it contained 32 operations. Fortunately Jqwik "shrunk" the failing test case to the minimized failing text case that can be seen as the value of "sample" and under the headline "Run failed after following action". To recall the bug we delibredly introduced was that remove does not work when "10" is in the list. Jqwik managed to find that exact and minimal case where it just adds the "10" and then calls "remove". After the "remove" "size" should be zero again but its not. That is what the last five lines inform us about.
+The implementation of the data structure had a bug that Jqwik found after 13 tests. The value of "originalSample" shows how complex that first failing test case was, it contained 32 operations. Fortunately Jqwik "shrunk" the failing test case to the minimized failing text case that can be seen as the value of "sample" and under the headline "Run failed after following action". To recall the bug we deliberately introduced was that remove does not work when "10" is in the list. Jqwik managed to find that exact and minimal case where it just adds the "10" and then calls "remove". After the "remove" "size" should be zero again but its not. That is what the last five lines inform us about.
 
-After this example it can be concluded that the ideas of QuickCheck translate surprisingly well to Java and can also be intuitivly understood by depending on the same vocabulary as the original QuickCheck. Even though QuickCheck was developed under the functional programming paradigm, it is still very sutable to test software of imperative languges aswell. Even though it is harder and requires more effort than testing stateless functions, testing of stateful systems can be conducted with Jqwik and that quite elegantly.
+After this example it can be concluded that the ideas of QuickCheck translate surprisingly well to Java and can also be intuitively understood by depending on the same vocabulary as the original QuickCheck. Even though QuickCheck was developed under the functional programming paradigm, it is still very suitable to test software of imperative languages as well. Even though it is harder and requires more effort than testing stateless functions, testing of stateful systems can be conducted with Jqwik and that quite elegantly.
 
 % TODO does that need to go to the conclusion
-
-\subsection{Go}
-\subsection{C \& C++}
-\subsection{JavaScript \& Node.js}
 
 \section{Conclusion}
 
 % IDEAS
 % EXAMPLE SECTION
 % PRACTICE SECTION
+% GO C/C++ JavaScript & Node
 
 \newpage
 \section{References}
