@@ -43,7 +43,7 @@
 }
 
 \title{\textbf{QuickCheck}\\ % Title
-A tool for random testing} % Subtitle
+An introduction} % Subtitle
 
 \author{\textsc{Moritz G\"ockel} % Author
 \\{\textit{Hochschule Karlsruhe Technik und Wirtschaft}}} % Institution
@@ -430,9 +430,23 @@ The implementation of the data structure had a bug that Jqwik found after 13 tes
 
 After this example it can be concluded that the ideas of QuickCheck translate surprisingly well to Java and can also be intuitively understood by depending on the same vocabulary as the original QuickCheck. Even though QuickCheck was developed under the functional programming paradigm, it is still very suitable to test software of imperative languages as well. Even though it is harder and requires more effort than testing stateless functions, testing of stateful systems can be conducted with Jqwik and that quite elegantly.
 
-% TODO does that need to go to the conclusion
-
 \section{Conclusion}
+
+%Testing and random testing
+
+At the beginning of this work the importance of testing has been stated as it is the most common way for evaluating the correctness of software. It was shown that the testing effort grows exponentially the bigger the to be system becomes. Random testing is the logical next step after automated testing and as an example for such a random testing approach QuickCheck was presented.  
+
+%ideas of QuickCheck
+
+QuickCheck rests on three pillars: Properties, generators and shrinking. Properties define a general assumption about the to be tested system, generators create to random input. This generated input data together with a property form a concrete test case. When an failing test case is found, it is "shrunken" down to the minimal failing test case by QuickCheck. This aids diagnosis of the failing code and helps find the reason of the bug. 
+
+%Commercial use
+
+After outlaying the necessity of random testing and presenting the ideas of QuickCheck this work provided an example on how QuickCheck has been used in practice. It was found that QuickCheck helps finding very subtile bugs but on the other hand requires an very consistent, complete and unambiguous specification. 
+
+%Java
+
+
 
 % IDEAS
 % EXAMPLE SECTION
