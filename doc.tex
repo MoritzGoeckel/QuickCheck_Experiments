@@ -58,11 +58,10 @@ An introduction} % Subtitle
 
 \newpage
 \tableofcontents
+
 \newpage
-
-\section{Abstract}
-
 \section{Introduction}
+
 \subsection{Testing large systems}
 
 Testing is the primary method to evaluate the correctness of software today. \cite{Ammann2016} Even though exhaustive testing is possible in many cases and majority of bugs can be triggered by relatively few test cases, \cite{Kuhn2004} the required effort to find these test cases can be high. In practice the time spend writing code is not seldom matched by the time spend on finding bugs and creating tests.
@@ -79,6 +78,7 @@ One way evaluate a softwares correctness is to keep and eye on irregularities wh
 
 After the difficulties in testing large systems were stated and the idea of random testing was proposed in the introduction, this work is aiming to give an overview over the ideas of QuickCheck. The theory is aided by examples in Haskell, as this is the language QuickCheck was originally written in. This work will then give an example on how QuickCheck was used in a commercial setting and how it performed. In the last part of this work it is evaluated how the ideas of QuickCheck translate to another language of another paradigm. As an example Java was chosen as it is commonly used in the industry and is an imperative language in contrast to Haskell.
 
+\newpage
 \section{The idea of QuickCheck}
 
 QuickCheck has three core pillars: Properties which define a general rule about the to be tested code, generators which create controllable random input data to create test cases and "shrinking" which reduces failing test cases to an minimal test case to aid diagnosis. These three concepts will be shown in this chapter.
@@ -227,6 +227,7 @@ quickCheck doesNotContain
 
 This example defines a simple test case in which it assumes that 7 and 30 can never occur in the same list. QuickCheck found a failing test case within 93 tries and then removed iteratively more and more elements from the list that made the test fail. After these 9 shrinks QuickCheck found the simplest failing test case.
 
+\newpage
 \section{Commercial use}
 
 A commercial version named Quviq QuickCheck has been created by Claessen and Hughes, the former authors of QuickCheck. Quviq QuickCheck was first used for testing the Magaco protocol in a case study in 2006 at Ericson. The stated goal was to evaluate Quviq QuickCheck regarding its effectiveness in an industrial setting. The telecommunication sector was choose because as the communication protocols are commonly both very complex and also quite well specified. The assumption was that this kind of environment is perfect for a QuickCheck-like testing approach. This chapter is going to be about that case study. \cite{Arts06}
@@ -247,7 +248,7 @@ Testing a stateful system is going to be further discussed with an concrete exam
 
 \subsection{Results}
 
-The authors of Quviq QuickCheck claim that their software can be used effectively in practice. They reported on finding very subtile bugs that manual testing and automated testing was unable to find. One of those bugs required seven specific commands with specific parameters to be executed in sequence to show. This again illustrates the usefulness of shrinking in QuickCheck as the first found sequence that caused that bug was 160 commands long but got shrunken down to only seven essential commands. Such a bug would be very hard to find other testing methods. \cite{Arts06}
+The authors of Quviq QuickCheck claim that their software can be used effectively in practice. They reported on finding very subtile bugs that manual testing and automated testing was unable to find. One of those bugs required seven specific commands with specific parameters to be executed in sequence to show. This again illustrates the usefulness of shrinking in QuickCheck as the first found sequence that caused that bug was 160 commands long but got shrunken down to only seven essential commands. Such a bug would be very hard to find using other testing methods. \cite{Arts06}
 
 On the other hand it turns out that after QuickCheck found a bug, it tends to always find it again. Therefore the bug either has to be fixed or the test case has to be adapted to continue testing. Before that testing with QuickCheck can hardly continue. The creators of QuickCheck state "QuickCheck is very likely to report the most common bug on every run". \cite{Arts06}
 
@@ -255,6 +256,7 @@ It is also stated that the specification of the to be tested system needs to be 
 
 % TODO FIND OTHER RELEVANT PROJECTS
 
+\newpage
 \section{QuickCheck in Java}
 
 The section "Theory" utilized exclusively Haskell to show the main ideas behind QuickCheck. This is because QuickCheck has been originally implemented in Haskell. But even though QuickCheck is rooted in functional programming, its main ideas still have been translated into many other languages and paradigms. As functional programming avoids uncontrolled side effects, it is known for being better testable. Therefore the question whether or not the ideas of QuickCheck can be applied to imperative languages arises. This chapter is about how QuickCheck can be used in other languages.
@@ -265,7 +267,7 @@ Java is at the time of writing the most popular programming language according t
 
 In the research for this work already seven implementations of QuickCheck for Java have been found. Some ar no longer under development and the amount of provided functionalities varies. But anyhow its surprising to find such a variety of implementations of the QuickCheck idea. For the sake of providing some insights how the QuickCheck ideas might look in a Java environment the Jqwik \cite{jqwik} has been chosen. Jqwik is a convenient to use and feature rich software package with an exceptional documentation that makes good use of the Java features to implement the ideas of QuickCheck. These are the reasons why Jqwik has been chosen for this work.
 
-\subsection{Property}
+\subsection{Properties}
 
 In Java we have to first create a class in order to define a property inside it as a method, just like in JUnit, one of the most commonly used testing libraries for Java. To mark the method as a property annotations are used. In contrast to Haskell we no longer run the tests by calling quickCheck with the method as parameter, we just run the test suite. 
 
@@ -297,7 +299,7 @@ void uniqueInList(@ForAll @Size(5)
 
 The input of this property will always be a list with unique integer values between zero and then of size 5. This shows the power and expressiveness of this approach. Also this example shows that in Jqwik it is common to use assertions to signal a failing test instead of returning a boolean.
 
-The following example shows how to create more custom generators in Jqwik. Generator functions in Jqwik always return an arbitrary of the to be generated type and is marked with the "@Provide" annotation. To use the generator in an property one just needs to provide the name of the method to the "@ForAll" annotation next to the parameter.
+The following example shows how to create more custom generators in Jqwik. Generator functions in Jqwik always return an arbitrary of the to be generated type and is marked with the "@Provide" annotation. To use the generator in an property one just needs to provide the name of the method to the "@ForAll" annotation next to the parameter. \cite{jqwikdoc}
 
 \begin{minted}{java}
 @Property
