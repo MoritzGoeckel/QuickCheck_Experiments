@@ -8,3 +8,5 @@
 *.run.xml
 *.toc
 _minted-doc
+
+!Erstversion_QuickCheck_Seminararbeit_MoritzGoeckel.pdf
