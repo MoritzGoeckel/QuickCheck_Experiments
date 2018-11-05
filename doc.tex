@@ -329,7 +329,7 @@ Note that this example uses the previously presented frequency method that works
 
 \subsection{Stateful testing}
 
-As Java is a imperative and object oriented language, Java applications are inherently stateful. Jqwik supports testing stateful methods in a quite similar way like described in the section "Stateful testing" in Haskell. Just to recap: In essence Actions need to be defined so that they can be executed on the to be tested object. One test case consists of a list of random length containing a random sequence of these actions, instantiated with random parameters. After the execution of each action the state of the to be tested object has to be evaluated to determine whether irregularities occurred. Here an example:
+As Java is a imperative and object oriented language, Java applications are inherently stateful. Jqwik supports testing stateful methods in a quite similar way like described in the section "Stateful systems" in Haskell. Just to recap: In essence Actions need to be defined so that they can be executed on the to be tested object. One test case consists of a list of random length containing a random sequence of these actions, instantiated with random parameters. After the execution of each action the state of the to be tested object has to be evaluated to determine whether irregularities occurred. Here an example:
 
 \begin{minted}{java}
 class MyList {
