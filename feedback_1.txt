@@ -1,9 +1,5 @@
 TODO:
 
-2.1 Properties 
-
-    (aka test oracle, invariants, ...)
-
 2.2 Generators
 
     The important details are there but a bit hard to grasp for the innocent reader.
@@ -11,10 +7,6 @@ TODO:
 
     Generators can be elegantly defined for algebraic data types (thanks to type classes).
     This might be something interesting to examine in more detail.
-
-2.3 Shrinking
-
-    Needs more examples. Why do we need shrinking?
 
 4 QuickCheck in Java and Erlang ...
 
@@ -24,8 +16,6 @@ TODO:
     Any significant differences? QuickCheck-Haskell makes heavy use of type classes, how does this translate to Java?
 
     The Java example is rather detailed. Would be good to have a similar worked out example for Haskell.
-
-
 
 DONE:
 
@@ -41,3 +31,13 @@ DONE:
 2. The idea of QuickCheck
 
     Mention the main ideas right at the start (introduction). Combine with a running example to motivate the approach.
+
+2.1 Properties 
+
+    (aka test oracle, invariants, ...)
+
+2.3 Shrinking
+
+    Needs more examples. Why do we need shrinking?
+
+DOING:

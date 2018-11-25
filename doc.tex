@@ -127,7 +127,9 @@ QuickCheck has three core pillars: Properties which define a general rule about 
 
 The most expensive part of software testing is not to run or to evaluate them, often the most expensive part is writing the test cases. QuickCheck tackles that problem by letting the software developer write generalized test functions of which each covers many test cases. These generalized test functions are called properties in QuickCheck. \cite{Hughes2010} Because of this generalized approach it is not necessary to write more than one property for each logical property of the to be tested function because many different test cases will be generated anyway. \cite{Hughes2006}
 
-A property is defined as a function that takes some random test data, provides that test data to the to be tested function and determines afterword whether a general rule about the relation between the random input and the to be tested functions output holds.
+The concept named property in QuickCheck is equivalent to the concepts of invariants and test oracles. Invariants originated in mathematics to describe rules that hold no matter the concrete case. Oracles are functions that determine whether or not a test has passed.
+
+In QuickCheck a property is defined as a function that takes some random test data, provides that test data to the to be tested function and determines afterword whether a general rule about the relation between the input and the to be tested functions output holds.
 
 \subsubsection{Defining properties}
 
@@ -251,21 +253,47 @@ This example defines a generator which consists of three generators with assigne
 
 \subsection{Shrinking}
 
-QuickCheck provides very powerful tools to evaluate the presence of bugs with its generators and properties. Imagine a just defined property states a logical rule, an appropriate generator creates test inputs and now it is found that a property does not hold. QuickCheck informs the test engineer about the input data that breaks the property. Finding the mistake in the code can be quite challenging, especially if the violating test case is very complex and patterns are therefore hard to find. To help the software developer to understand the bug more easily QuickCheck "shrinks" the violating test case systematically to iteratively find violating test cases that are smaller. QuickCheck shrinks the violating test case until it can not be shrunken further. This minimal violating test case is then given to the user. This method makes finding the error in the code easier after a violating test case has been discovered by QuickCheck. \cite{Claessen2009}
+QuickCheck provides very powerful tools to evaluate the presence of bugs with its generators and properties. Imagine a just defined property states a logical rule, an appropriate generator creates test inputs and now it is found that a property does not hold. QuickCheck informs the test engineer about the input data that breaks the property. Finding the mistake in the code can be quite challenging, especially if the violating test case is very complex and patterns are therefore hard to find. 
+
+To help the software developer to understand the bug more easily QuickCheck "shrinks" the violating test case systematically to iteratively find violating test cases that are smaller. QuickCheck shrinks the violating test case until it can not be shrunken further. This minimal violating test case is then given to the user. This method makes finding the error in the code easier after a violating test case has been discovered by QuickCheck. \cite{Claessen2009}
 
 Shrinking consists of removing method calls and simplifying numbers in violating test cases and evaluating whether or not the new and simpler test case still violates the property. This can be a very computational expensive endeavor and is reported to take up to 80\% of the computation time. This can have quite an impact on waiting time for the testing engineers, especially when violating test cases are easy to find but hard to simplify. \cite{Hughes:2016}
 
-\begin{minted}{haskell}
-doesNotContain :: [Int] -> Bool
-doesNotContain xs = 
-    not ((elem 7 xs) && (elem 30 xs))
+Imagine we have a function that breaks sometimes, but unfortunately very seldom. This is very hard to debug. The next example is such a function. Most of the time it receives an array of integers and returns the sum. Except for when the array contains a seven and an eight. Then it returns a sum that is off by one.
 
-quickCheck doesNotContain
--- Failed! Falsifiable (after 93 tests and 9 shrinks):
--- [30,7]
+\begin{minted}{haskell}
+buggySum :: [Int] -> Int
+buggySum xs = 
+    if not ((elem 7 xs) && (elem 30 xs))
+        then sum xs
+        else (sum xs) - 1
 \end{minted}
 
-This example defines a simple test case in which it assumes that 7 and 30 can never occur in the same list. QuickCheck found a failing test case within 93 tries and then removed iteratively more and more elements from the list that made the test fail. After these 9 shrinks QuickCheck found the simplest failing test case.
+We define a property to test the function. This is simple because in this example we know that buggySum should behave just as sum. Therefore we can just compare the results of the two functions.
+
+\begin{minted}{haskell}
+prop_sum :: [Int] -> Bool
+prop_sum xs = 
+    sum xs == buggySum xs
+\end{minted}
+
+No imagine we execute QuickCheck and it tells us that it found a violating test case. Something along these lines:
+
+\begin{minted}{haskell}
+*Main> quickCheck prop_sum
+-- Failed! Falsifiable (after 93 tests)
+-- [30, 21 , 52, 199, 41, 85, 1, 0, 7, 23, 49, 19, 30, ...]
+\end{minted}
+
+This report is not useful. QuickCheck told us that the test breaks but we have no idea why. There is no pattern obvious in the input data that could help us locate the bug. Fortunately this is not the actual output of QuickCheck. Instead the output looks like this:
+
+\begin{minted}{haskell}
+*Main> quickCheck prop_sum
+-- Failed! Falsifiable (after 93 tests and 9 shrinks):
+-- [30, 7]
+\end{minted}
+
+QuickCheck found a failing test case within 93 tries and then removed iteratively more and more elements from the list that made the test fail. After 9 shrinks QuickCheck found the simplest failing test case. Now the bug is obvious: "buggySum" always breaks when both 7 and 30 are in the input array. This is very useful for finding bugs.
 
 \newpage
 \section{QuickCheck in Java}
