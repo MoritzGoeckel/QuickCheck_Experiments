@@ -62,9 +62,34 @@ An introduction} % Subtitle
 \newpage
 \section{Introduction}
 
-\subsection{Testing large systems}
+\subsection{Structure}
+
+At first this work is going to give a brief introduction to software testing, automated testing and the difficulties of testing large systems. To conclude the introduction the idea of random testing is going to be proposed and motivated. The second chapter is aiming to give an overview over the ideas of QuickCheck. The theory is aided by examples in Haskell, as this is the language QuickCheck was originally written in. The third chapter deals with the evaluation on how the ideas of QuickCheck translate to another language of another paradigm. As an example Java was chosen as it is commonly used in the industry and is an imperative language in contrast to Haskell. In the last chapter this work will then give an example on how QuickCheck was used in a commercial setting and how it performed.
+
+\subsection{Software testing}
 
 Testing is the primary method to evaluate the correctness of software today. \cite{Ammann2016} Even though exhaustive testing is possible in many cases and the majority of bugs can be triggered by relatively few test cases, \cite{Kuhn2004} the required effort to find these test cases can be high. In practice the time spend writing code is not seldom matched by the time spend on finding bugs and creating tests.
+
+Test cases have to be defined to evaluate a systems correctness. Such a test case usually consists of two components: The stimulus and the expected result. A stimulus can be any kind of input that is passed to the system under test (SUT). The expected result is the expected output or state of the SUT after the test.
+
+The execution of such a test case can be divided into three distinct phases. First the SUT has to be stimulated by the defined stimulus. In practice this means for example that a person uses the software in a certain way or that a function is called with certain parameters. The second phase is the observation of the SUT's behavior. In practice the user might just look at the UI of the software or the return value of the invoked function is stored in memory. In the final phase the previously recorded data is compared with the expected results of the test case. This could mean in practice that the tester notices that the formatting of a website is off or that the function returned a incorrect result.
+
+\subsection{Automated software testing}
+
+One way to evaluate the correctness of software is to keep and eye on irregularities while manually testing it. This way is very time consuming as every test case has to be conducted by a person. It can take months to test a big software system this way. \cite{Arts06} Because of this human element, manual testing is also very error prone and therefore not reliable. As an addition to manual testing automated testing has been widely adopted in the industry.
+
+In automated software testing the three previously described phases are implemented in code to be executed automatically after a certain test case has been defined. The major benefit of this way of testing is that conducting tests becomes very cheap. The downside is that defining such test cases can be labour intensive.
+
+\begin{minted}{haskell}
+testSum :: Bool
+testSum = 
+    sum [1,2] == 3
+\end{minted}
+
+This is an example of a very basic test case. The test case is implemented as a function in Haskell; it's name is "testSum". As the name suggests this test case evaluates the correctness of the "sum" function. The "sum" function receives as input an array of integers and returns a single integer. Therefore the SUT in this example is the "sum" function. When we execute the test case (invoke the "testSum" function) the three previously
+described steps are taken: The SUT is stimulated by invoking it with the array of 1 and 2. The behavior of the system is recorded and compared with the expected result. In this case the expected result is "3". The test case then returns "True" if it holds and "False" otherwise. 
+
+\subsection{The problem of testing large systems}
 
 The problem that arises with testing is that the amount of required test cases for a good coverage of a software system is rising exponentially as the system becomes larger and more complex. Imagine for example a software with n features. To test each feature individually, one would need at least n test cases. This is still feasible. But in most systems the features interact with each other. This leads to the necessity to also test every feature in cooperation with every other feature. Testing these pairs of features requires us to write therefore an additional $n^2$  new test cases. This thought experiment can be continued with three interacting features, ergo $n^3$ necessary test cases and so forth. \cite{Hughes2016}
 
@@ -72,11 +97,26 @@ We find that in very large complex systems it is often no longer feasible to gai
 
 \subsection{Random testing}
 
-One way to evaluate the correctness of software is to keep and eye on irregularities while manually testing it. This way is very time consuming as every test case has to be conducted by a person. It can take months to test a big software system this way. \cite{Arts06} Because of this human element, manual testing is also very error prone and therefore not reliable. As an addition to manual testing automated testing has been widely adopted in the industry. With automated testing bigger test coverage can be achieved and a test runs can be conducted within minutes or hours instead of the months it would take to manually test the software. Unfortunately the testing process is still one of the most expensive parts of software development, even with automated testing. Not seldom the testing efforts account for about half of the development costs. \cite{Claessen2000} The logical next step to reduce these costs after automated testing is the automated generation of test cases. The utilization of automated generation of test cases may lead to further reduced testing effort and the possibility to gain more test coverage in less time.
+With automated testing bigger test coverage can be achieved and a test runs can be conducted within minutes or hours instead of the months it would take to manually test the software. Unfortunately the testing process is still one of the most expensive parts of software development, even with automated testing. Not seldom the testing efforts account for about half of the development costs. \cite{Claessen2000} The logical next step to reduce these costs after automated testing is the automated generation of test cases. The utilization of automated generation of test cases may lead to further reduced testing effort and the possibility to gain more test coverage in less time.
 
-\subsection{Structure}
+This work focuses on QuickCheck which is one implementation of the idea of automated test generation. QuickCheck relies on the same three steps of testing that have been described earlier and additionally defines three concepts: Properties, generators and "shrinking". These concepts are going to be explained in detail in the next chapter.
 
-After the difficulties in testing large systems were stated and the idea of random testing was proposed in the introduction, this work is aiming to give an overview over the ideas of QuickCheck. The theory is aided by examples in Haskell, as this is the language QuickCheck was originally written in. This work will then give an example on how QuickCheck was used in a commercial setting and how it performed. In the last part of this work, it is evaluated how the ideas of QuickCheck translate to another language of another paradigm. As an example Java was chosen as it is commonly used in the industry and is an imperative language in contrast to Haskell.
+\begin{minted}{haskell}
+prop_sum :: Property
+prop_sum = 
+    forAll
+        -- defining a generator for arrays of two elements
+        (vectorOf 2 (choose (0, 1000)))
+        -- applying it to the sum function and comparing it 
+        -- with the sum of the two elements
+        ((\xs -> sum xs == xs!!0 + xs!!1) :: [Integer] -> Bool)
+
+-- executing quickCheck to generate concrete test cases
+*Main> quickCheck prop_sum 
++++ OK, passed 100 tests.
+\end{minted}
+
+This is example is a reimplementation of the sum test case that we defined in the section "Automated software testing". We use the concepts of QuickCheck to test the SUT not only with one array but with 100. This may seem daunting at first glance, but it is going to get clear after reading the next chapter.
 
 \newpage
 \section{The idea of QuickCheck}
@@ -226,35 +266,6 @@ quickCheck doesNotContain
 \end{minted}
 
 This example defines a simple test case in which it assumes that 7 and 30 can never occur in the same list. QuickCheck found a failing test case within 93 tries and then removed iteratively more and more elements from the list that made the test fail. After these 9 shrinks QuickCheck found the simplest failing test case.
-
-\newpage
-\section{Commercial use}
-
-A commercial version named Quviq QuickCheck has been created by Claessen and Hughes, the former authors of QuickCheck. Quviq QuickCheck was first used for testing the Magaco protocol in a case study in 2006 at Ericson. The stated goal was to evaluate Quviq QuickCheck regarding its effectiveness in an industrial setting. The telecommunication sector was chosen because communication protocols are commonly both very complex and also quite well specified. The assumption was that this kind of environment is perfect for a QuickCheck-like testing approach. This chapter is going to be about that case study. \cite{Arts06}
-
-\subsection{Erlang}
-
-In contrast to QuickCheck, which was written in Haskell, Quviq QuickCheck was written in Erlang as this language was wider spread in the industry and supported more natural state based testing. Even though some parts of the to be tested software in the Ericson case study where also written in Erlang, it is important to note that a black-box approach was used, that only generated messages and analysed replies. Therefore the language of the to be tested software was actually not relevant for the project. \cite{Arts06} 
-
-\subsection{Positive \& negative testing}
-
-To conduct the testing both positive and negative test cases have been generated by Quviq QuickCheck. Positive test cases are ones where valid messages have been generated and the reply of the to be tested system had to be correct to pass the test. Negative test cases were created by generating and sending invalid messages to the system and then expecting a negative response from the system without seeing the system crashing or entering an invalid state. The distinction between negative and positive test cases has to be made quite clear in QuickCheck as they have different criteria for passing. The challenging part of the testing with QuickCheck in such a setting is to be able to randomly generate messages and to predict whether or not it is valid in order to evaluate the response of the system. This requires the test engineer to know and implement the specification of the to be tested system quite precisely. \cite{Arts06}
-
-\subsection{Stateful systems}
-
-Stateless systems are usually assumed to be better testable. But even though the system in the Ericson case study was mostly stateless, some bugs still only showed when executing a certain combination of commands in sequence. Quviq QuickCheck therefore had to be able to test systems that also relay on internal state. Fortunately this is possible in QuickCheck: Instead of generating the input parameters for a function call, an array of to be called functions and the appropriate input parameters were generated. This yields a sequence of commands (with parameters) that can be executed on the to be tested system. The response of the system can then be analysed either after every command or at the end of the sequence. The elegance of this approach lies in the ability to use QuickChecks "shrinking" on the command sequence after finding a violating test case. \cite{Arts06} 
-
-Testing a stateful system is going to be further discussed with an concrete example later in the section "Stateful testing".
-
-\subsection{Results}
-
-The authors of Quviq QuickCheck claim that their software can be used effectively in practice. They reported on finding very subtile bugs that manual testing and automated testing were unable to find. One of those bugs required seven specific commands with specific parameters to be executed in sequence to show. This again illustrates the usefulness of shrinking in QuickCheck, because the first found sequence that caused that bug was 160 commands long but got shrunken down to only seven essential commands. Such a bug would be very hard to find using other testing methods. \cite{Arts06}
-
-On the other hand it turns out that after QuickCheck found a bug, it tends to always find it again. Therefore the bug either has to be fixed or the test case has to be adapted to continue testing. Before this change, testing with QuickCheck can hardly continue. The creators of QuickCheck state "QuickCheck is very likely to report the most common bug on every run". \cite{Arts06}
-
-It is also stated that the specification of the to be tested system needs to be consistent, unambiguous and the testing team has to understand it very well. Every ambiguity or inconsistency in the specification will eventually be found by QuickCheck and will look like a bug. This however should be the case with every thorough testing system and should therefore not been seen as a downside. \cite{Arts06}
-
-% TODO FIND OTHER RELEVANT PROJECTS
 
 \newpage
 \section{QuickCheck in Java}
@@ -429,6 +440,33 @@ but was not.
 The implementation of the data structure had a bug that Jqwik found after 13 tests. The value of "originalSample" shows how complex that first failing test case was, it contained 32 operations. Fortunately Jqwik "shrunk" the failing test case to the minimized failing text case that can be seen as the value of "sample" and under the headline "Run failed after following action". To recall: The bug that was deliberately introduced, was that remove does not work when "10" is in the list. Jqwik managed to find that exact and minimal case where it just adds the "10" and then calls "remove". After the "remove" "size" should be zero again but its not. That is what the last five lines inform us about.
 
 After this example it can be concluded that the ideas of QuickCheck translate surprisingly well to Java and can also be intuitively understood by depending on the same vocabulary as the original QuickCheck. Even though QuickCheck was developed under the functional programming paradigm, it is still very suitable to test software of imperative languages as well. Even though it is harder and requires more effort than testing stateless functions, testing of stateful systems can be conducted with Jqwik and that quite elegantly.
+
+\newpage
+\section{Commercial use}
+
+A commercial version named Quviq QuickCheck has been created by Claessen and Hughes, the former authors of QuickCheck. Quviq QuickCheck was first used for testing the Magaco protocol in a case study in 2006 at Ericson. The stated goal was to evaluate Quviq QuickCheck regarding its effectiveness in an industrial setting. The telecommunication sector was chosen because communication protocols are commonly both very complex and also quite well specified. The assumption was that this kind of environment is perfect for a QuickCheck-like testing approach. This chapter is going to be about that case study. \cite{Arts06}
+
+\subsection{Erlang}
+
+In contrast to QuickCheck, which was written in Haskell, Quviq QuickCheck was written in Erlang as this language was wider spread in the industry and supported more natural state based testing. Even though some parts of the to be tested software in the Ericson case study where also written in Erlang, it is important to note that a black-box approach was used, that only generated messages and analysed replies. Therefore the language of the to be tested software was actually not relevant for the project. \cite{Arts06} 
+
+\subsection{Positive \& negative testing}
+
+To conduct the testing both positive and negative test cases have been generated by Quviq QuickCheck. Positive test cases are ones where valid messages have been generated and the reply of the to be tested system had to be correct to pass the test. Negative test cases were created by generating and sending invalid messages to the system and then expecting a negative response from the system without seeing the system crashing or entering an invalid state. The distinction between negative and positive test cases has to be made quite clear in QuickCheck as they have different criteria for passing. The challenging part of the testing with QuickCheck in such a setting is to be able to randomly generate messages and to predict whether or not it is valid in order to evaluate the response of the system. This requires the test engineer to know and implement the specification of the to be tested system quite precisely. \cite{Arts06}
+
+\subsection{Stateful systems}
+
+Stateless systems are usually assumed to be better testable. But even though the system in the Ericson case study was mostly stateless, some bugs still only showed when executing a certain combination of commands in sequence. Quviq QuickCheck therefore had to be able to test systems that also relay on internal state. Fortunately this is possible in QuickCheck: Instead of generating the input parameters for a function call, an array of to be called functions and the appropriate input parameters were generated. This yields a sequence of commands (with parameters) that can be executed on the to be tested system. The response of the system can then be analysed either after every command or at the end of the sequence. The elegance of this approach lies in the ability to use QuickChecks "shrinking" on the command sequence after finding a violating test case. \cite{Arts06} 
+
+Testing stateful systems was also discussed with an concrete example in the section "Stateful testing" earlier in this work.
+
+\subsection{Results}
+
+The authors of Quviq QuickCheck claim that their software can be used effectively in practice. They reported on finding very subtile bugs that manual testing and automated testing were unable to find. One of those bugs required seven specific commands with specific parameters to be executed in sequence to show. This again illustrates the usefulness of shrinking in QuickCheck, because the first found sequence that caused that bug was 160 commands long but got shrunken down to only seven essential commands. Such a bug would be very hard to find using other testing methods. \cite{Arts06}
+
+On the other hand it turns out that after QuickCheck found a bug, it tends to always find it again. Therefore the bug either has to be fixed or the test case has to be adapted to continue testing. Before this change, testing with QuickCheck can hardly continue. The creators of QuickCheck state "QuickCheck is very likely to report the most common bug on every run". \cite{Arts06}
+
+It is also stated that the specification of the to be tested system needs to be consistent, unambiguous and the testing team has to understand it very well. Every ambiguity or inconsistency in the specification will eventually be found by QuickCheck and will look like a bug. This however should be the case with every thorough testing system and should therefore not been seen as a downside. \cite{Arts06}
 
 \newpage
 \section{Conclusion}

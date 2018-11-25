@@ -1,11 +1,4 @@
-1. Introduction, Testing, ...
-
-    Elaborate a bit more. What constitutes a test (case)? Stimulate the SUT (System under test), record its behavior, compared against expected results, ...
-    Maybe a simple example may help as well.
-
-2. The idea of QuickCheck
-
-    Mention the main ideas right at the start (introduction). Combine with a running example to motivate the approach.
+TODO:
 
 2.1 Properties 
 
@@ -23,10 +16,6 @@
 
     Needs more examples. Why do we need shrinking?
 
-3 Commerical use
-
-    I'd move this section towards the end
-
 4 QuickCheck in Java and Erlang ...
 
     Stateful testing issue not very clear. We need to keep track of internal state (we're interested in) and not only compare against the return result.
@@ -35,3 +24,20 @@
     Any significant differences? QuickCheck-Haskell makes heavy use of type classes, how does this translate to Java?
 
     The Java example is rather detailed. Would be good to have a similar worked out example for Haskell.
+
+
+
+DONE:
+
+3 Commercial use
+
+    I'd move this section towards the end
+
+1. Introduction, Testing, ...
+
+    Elaborate a bit more. What constitutes a test (case)? Stimulate the SUT (System under test), record its behavior, compared against expected results, ...
+    Maybe a simple example may help as well.
+
+2. The idea of QuickCheck
+
+    Mention the main ideas right at the start (introduction). Combine with a running example to motivate the approach.
