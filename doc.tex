@@ -465,7 +465,7 @@ to be equal to: <0>
 but was not.
 \end{minted}
 
-The implementation of the data structure had a bug that Jqwik found after 13 tests. The value of "originalSample" shows how complex that first failing test case was, it contained 32 operations. Fortunately Jqwik "shrunk" the failing test case to the minimized failing text case that can be seen as the value of "sample" and under the headline "Run failed after following action". To recall: The bug that was deliberately introduced, was that remove does not work when "10" is in the list. Jqwik managed to find that exact and minimal case where it just adds the "10" and then calls "remove". After the "remove" "size" should be zero again but its not. That is what the last five lines inform us about.
+The implementation of the data structure had a bug that Jqwik found after 13 tests. The value of "originalSample" shows how complex that first failing test case was, it contained 32 operations. Fortunately Jqwik "shrunk" the failing test case to the minimized failing text case that can be seen as the value of "sample" and under the headline "Run failed after following action". To recall: The bug that was deliberately introduced, was that "remove" does not work when "10" is in the list. Jqwik managed to find that exact and minimal case where it just adds the "10" and then calls "remove". After the "remove" "size" should be zero again but its not. That is what the last five lines inform us about.
 
 After this example it can be concluded that the ideas of QuickCheck translate surprisingly well to Java and can also be intuitively understood by depending on the same vocabulary as the original QuickCheck. Even though QuickCheck was developed under the functional programming paradigm, it is still very suitable to test software of imperative languages as well. Even though it is harder and requires more effort than testing stateless functions, testing of stateful systems can be conducted with Jqwik and that quite elegantly.
 
@@ -484,7 +484,9 @@ To conduct the testing both positive and negative test cases have been generated
 
 \subsection{Stateful systems}
 
-Stateless systems are usually assumed to be better testable. But even though the system in the Ericson case study was mostly stateless, some bugs still only showed when executing a certain combination of commands in sequence. Quviq QuickCheck therefore had to be able to test systems that also relay on internal state. Fortunately this is possible in QuickCheck: Instead of generating the input parameters for a function call, an array of to be called functions and the appropriate input parameters were generated. This yields a sequence of commands (with parameters) that can be executed on the to be tested system. The response of the system can then be analysed either after every command or at the end of the sequence. The elegance of this approach lies in the ability to use QuickChecks "shrinking" on the command sequence after finding a violating test case. \cite{Arts06} 
+Stateless systems are usually assumed to be better testable. But even though the system in the Ericson case study was mostly stateless, some bugs still only showed when executing a certain combination of commands in sequence. Quviq QuickCheck therefore had to be able to test systems that also relay on internal state. Fortunately this is possible in QuickCheck: Instead of generating the input parameters for a function call, an array of to be called functions and the appropriate input parameters were generated. This yields a sequence of commands (with parameters) that can be executed on the to be tested system. The response of the system can then be analysed either after every command or at the end of the sequence. The elegance of this approach lies in the ability to use QuickChecks "shrinking" on the command sequence after finding a violating test case. \cite{Arts06}
+
+The problem with testing stateful systems on the other hand is that it is hard to evaluate whether or not the answers of the system are correct and whether or not the systems state is still a legal one. Often the solution for this problem is to only approximate if the answer and the state of the system are "reasonable" and no crashes occur.
 
 Testing stateful systems was also discussed with an concrete example in the section "Stateful testing" earlier in this work.
 
@@ -507,22 +509,15 @@ At the beginning of this work the importance of testing has been stated: It is t
 
 QuickCheck rests on three pillars: Properties, generators and shrinking. Properties define a general assumption about the to be tested system, generators create random input for properties. This generated input together with a property form a concrete test case. When an failing test case is found, it is "shrunken" down to the minimal failing test case by QuickCheck. This aids diagnosis of the failing code and helps find the reason of the bug. 
 
-%Commercial use
-
-After outlaying the necessity of random testing and presenting the ideas of QuickCheck this work provided an example on how QuickCheck has been used in practice. It was found that QuickCheck helps finding very subtile bugs but on the other hand requires an very consistent, complete and unambiguous specification. 
-
 %Java
 
-In the last chapter this work showed that the ideas of QuickCheck translate to Java very well. This is remarkable as QuickCheck originated in functional programming and Java is inherently imperative. It was also shown that stateful code can be tested elegantly and thoroughly with QuickCheck and Jqwik. 
+The ideas of QuickCheck translate to Java very well. This is remarkable as QuickCheck originated in functional programming and Java is inherently imperative. It was also shown that stateful code can be tested elegantly and thoroughly with QuickCheck and Jqwik. 
+
+%Commercial use
+
+The last chapter was about how QuickCheck has been used in practice. It was found that QuickCheck helps finding very subtile bugs but on the other hand requires an very consistent, complete and unambiguous specification. 
 
 %Conclusion
-
-
-
-% IDEAS
-% EXAMPLE SECTION
-% PRACTICE SECTION
-% GO C/C++ JavaScript & Node
 
 \newpage
 \section{References}
