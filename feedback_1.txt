@@ -7,11 +7,6 @@ TODO:
         Generators can be elegantly defined for algebraic data types (thanks to type classes).
         This might be something interesting to examine in more detail.
 
-4 QuickCheck in Java and Erlang ...
-
-    A more detailed comparison of QuickCheck-Haskell vs QuickCheck-Java is desirable.
-    Any significant differences? QuickCheck-Haskell makes heavy use of type classes, how does this translate to Java?
-
 DONE:
 
 3 Commercial use
@@ -45,4 +40,7 @@ DONE:
 
     Stateful testing issue not very clear. We need to keep track of internal state (we're interested in) and not only compare against the return result.
 
-DOING:
+4 QuickCheck in Java and Erlang ...
+
+    A more detailed comparison of QuickCheck-Haskell vs QuickCheck-Java is desirable.
+    Any significant differences? QuickCheck-Haskell makes heavy use of type classes, how does this translate to Java?

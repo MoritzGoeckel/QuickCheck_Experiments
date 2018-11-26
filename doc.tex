@@ -259,7 +259,7 @@ To help the software developer to understand the bug more easily QuickCheck "shr
 
 Shrinking consists of removing method calls and simplifying numbers in violating test cases and evaluating whether or not the new and simpler test case still violates the property. This can be a very computational expensive endeavor and is reported to take up to 80\% of the computation time. This can have quite an impact on waiting time for the testing engineers, especially when violating test cases are easy to find but hard to simplify. \cite{Hughes:2016}
 
-Imagine we have a function that breaks sometimes, but unfortunately very seldom. This is very hard to debug. The next example is such a function. Most of the time it receives an array of integers and returns the sum. Except for when the array contains a seven and an eight. Then it returns a sum that is off by one.
+Imagine we have a function that breaks sometimes, but unfortunately very seldom. This is hard to debug. The next example is such a function. Most of the time it receives an array of integers and returns the sum. Except for when the array contains a seven and an thirty: Then it returns a sum that is off by one.
 
 \begin{minted}{haskell}
 buggySum :: [Int] -> Int
@@ -293,7 +293,7 @@ This report is not useful. QuickCheck told us that the test breaks but we have n
 -- [30, 7]
 \end{minted}
 
-QuickCheck found a failing test case within 93 tries and then removed iteratively more and more elements from the list that made the test fail. After 9 shrinks QuickCheck found the simplest failing test case. Now the bug is obvious: "buggySum" always breaks when both 7 and 30 are in the input array. This is very useful for finding bugs.
+QuickCheck found a failing test case within 93 tries and then removed iteratively more and more elements from the list that made the test fail. After 9 shrinks QuickCheck found the simplest failing test case. Now the bug is obvious: "buggySum" always breaks when both 7 and 30 are in the input array. QuickChecks shrinking is a very useful feature for finding bugs.
 
 \newpage
 \section{QuickCheck in Java}
@@ -467,7 +467,45 @@ but was not.
 
 The implementation of the data structure had a bug that Jqwik found after 13 tests. The value of "originalSample" shows how complex that first failing test case was, it contained 32 operations. Fortunately Jqwik "shrunk" the failing test case to the minimized failing text case that can be seen as the value of "sample" and under the headline "Run failed after following action". To recall: The bug that was deliberately introduced, was that "remove" does not work when "10" is in the list. Jqwik managed to find that exact and minimal case where it just adds the "10" and then calls "remove". After the "remove" "size" should be zero again but its not. That is what the last five lines inform us about.
 
-After this example it can be concluded that the ideas of QuickCheck translate surprisingly well to Java and can also be intuitively understood by depending on the same vocabulary as the original QuickCheck. Even though QuickCheck was developed under the functional programming paradigm, it is still very suitable to test software of imperative languages as well. Even though it is harder and requires more effort than testing stateless functions, testing of stateful systems can be conducted with Jqwik and that quite elegantly.
+\subsection{Differences between Jqwik and QuickCheck}
+
+\subsubsection{Assertions}
+
+In the original QuickCheck properties are always defined as functions that testable and therefore either return a boolean or a property. Jqwik on the other hand encourages the user to utilize a rich library of assertions that do not return anything but throw an error on runtime when violated. Because of this heavy use of assertions most properties in Jqwik actually return void.
+
+\subsubsection{Class \& Annotations}
+
+The entry point for QuickCheck in Haskell is the quickCheck method. To start the testing procedure this method is called with a to be tested property. This is not necessary in Jqwik, as Jqwik finds all the properties by itself and executes them automatically. 
+
+Because in Java no method can live outside a class, it is necessary to create a class or use an existing one to contain the property methods. Good practice is to group the properties and generators that are highly related together in one class. Such a construct is not necessary in Haskell.
+
+To enable Jqwik to automatically find the property functions, even though they are not identifiable by their method signature, Java annotations are used. Such annotations are also utilized by Jqwik to mark generators and to map them to certain parameters of properties. Because of their heavy use, annotations are very powerful and vital to Jqwik. QuickCheck in Haskell does not need such a mechanism because every needed generator for a property is either given by the user or inferred by type.
+
+\subsubsection{Type classes and generics}
+
+QuickCheck in Haskell relies strongly on type classes. Such a thing does not exist in Java. Instead interfaces in combination with generics are used. This difference can be observed when looking at for example the different definitions of arbitrary:
+
+The definition of Arbitrary in Haskell:
+
+\begin{minted}{haskell}
+class Arbitrary a where
+    arbitrary :: Gen a
+\end{minted}
+
+The definition of Arbitrary in Java:
+
+\begin{minted}{java}
+interface Arbitrary<T>{
+    RandomGenerator<T> generator(int var);
+    ...
+}
+\end{minted}
+
+Despite the very different technologies, the semantics of these two definitions are quite similar. Both declare a type named Arbitrary that provides a generator for a generic type a in Haskell and T in Java.
+
+\subsection{Conclusion}
+
+After the examples in this chapter it can be concluded that the ideas of QuickCheck translate surprisingly well to Java and can also be intuitively understood because it is using the same vocabulary as the original QuickCheck. Even though QuickCheck was developed under the functional programming paradigm, it is still very suitable to test software of imperative languages as well. Even though it is harder and requires more effort than testing stateless functions, testing of stateful systems can be conducted with Jqwik and that quite elegantly.
 
 \newpage
 \section{Commercial use}
