@@ -554,22 +554,6 @@ The last chapter was about how QuickCheck has been used in practice. It was foun
 %Conclusion
 
 \newpage
-
-JAVA EXAMPLE
-
-\begin{minted}{java}
-int sum(List<Integer> list){
-    ...
-}
-
-@Property
-void propSum(@ForAll List<@IntRange(min = 0, max = 1000) Integer> list) {
-    int result = sum(list);
-    int expectedResult = list.stream().mapToInt(Integer::intValue).sum();
-    assert result == expectedResult;
-}
-\end{minted}
-
 \section{References}
 \printbibliography[heading=none]
 
