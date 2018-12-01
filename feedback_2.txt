@@ -1,0 +1,30 @@
+Nochmal spellcheck "ar" => "are"
+
+1.1 Structure
+
+    Should come at the end of the introduction.
+    The introduction tells the reader what to expect.
+    Before diving into details, we tell the reader where specific topics are discussed.
+
+Section 2 gives an introduction to QuickCheck in Haskell.
+Section 3 considers QuickCheck in the Java setting and we draw
+same comparisons about the look and feel of QuickCheck in both languages.
+....
+
+1.3 Automated software testing
+
+One way to evaluate the correctness of software is to keep and eye on
+irregularities while manually testing it. This way is very time consuming as
+every test case has to be conducted by a person.
+
+  Not clear what are you trying to say here. Which parts of testing are time consuming? More details.
+  BTW. "an eye"
+
+In automated software testing the three previously described phases
+ 
+  The *three* phases need to be highlighted. Maybe, use enumeration.
+
+1.4 The problem of testing large system
+
+   Best to skip this part. QuickCheck doesn't solve all the testing problems.
+   It's just a systematic method to create test cases.

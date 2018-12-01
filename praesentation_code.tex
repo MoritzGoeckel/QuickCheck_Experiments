@@ -1,0 +1,95 @@
+\newpage
+
+DEFINITION BUGGY SUM
+
+\begin{minted}{haskell}
+buggySum :: [Int] -> Int
+buggySum xs = 
+    if (elem 7 xs) && (elem 30 xs)
+        then (sum xs) - 1
+        else sum xs
+\end{minted}
+
+MANUELLER TEST
+
+\begin{minted}{haskell}
+*Main> buggySum [10, 2]
+12
+*Main> buggySum [7, 30, 10]
+46
+\end{minted}
+
+AUTOMATISIERTER TEST
+
+\begin{minted}{haskell}
+testSum :: Bool
+testSum = 
+    sum [1,2] == 3
+
+*Main> testSum
+True
+\end{minted}
+
+PROPERTY
+
+\begin{minted}{haskell}
+propSum :: [Int] -> Bool
+propSum xs = 
+    sum xs == buggySum xs
+\end{minted}
+
+\newpage
+
+GENERATORS
+
+\begin{minted}{haskell}
+*Main> generate $ choose (1, 10000)
+42
+
+*Main> generate $ vectorOf 2 (choose (0, 1000))
+[912,849]
+
+*Main> generate $ listOf (choose (0, 1000))
+[781,78,14,234,...]
+
+*Main> generate $ frequency
+    [(9, choose (1, 10)), (1, choose (-10, -1))]
+5
+\end{minted}
+
+UNSHRINKED
+
+\begin{minted}{haskell}
+*Main> quickCheck $ forAll 
+            (listOf $ choose (0, 1000)) 
+            propSum
+
+*** Failed! Falsifiable (after 93 tests):  
+[257,415,722,209,151,540,754,432,354,592,546,652,40,16,456,693,
+911,671,341,431,746,496,20,234,391,693,949,797,97,231,780,584,
+681,131,720,921,454,273,651,581,254,567,359,637,374,162,191,476,
+230,173,37,867,941,848,73,705,999,803,662,78,264,672,729,753,
+130,261,186,719,968,99,425,885,598,359,286,7,168,357,430,30,584,
+265,613,0,669,606,475,560,836,155,579,848]
+\end{minted}
+
+SHRINKED
+
+\begin{minted}{haskell}
+*Main> quickCheck $ forAllShrink 
+            (listOf $ choose (0, 1000)) 
+            (shrinkList shrinkIntegral) 
+            propSum
+
+*** Failed! Falsifiable (after 44 tests and 10 shrinks):     
+[30,7]
+\end{minted}
+
+AUTOMATIC :D
+
+\begin{minted}{haskell}
+*Main> quickCheck propSum
+*** Failed! Falsifiable 
+(after 71 tests and 7 shrinks):     
+[30,7]
+\end{minted}

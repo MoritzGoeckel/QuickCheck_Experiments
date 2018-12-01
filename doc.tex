@@ -264,9 +264,9 @@ Imagine we have a function that breaks sometimes, but unfortunately very seldom.
 \begin{minted}{haskell}
 buggySum :: [Int] -> Int
 buggySum xs = 
-    if not ((elem 7 xs) && (elem 30 xs))
-        then sum xs
-        else (sum xs) - 1
+    if (elem 7 xs) && (elem 30 xs)
+        then (sum xs) - 1
+        else sum xs
 \end{minted}
 
 We define a property to test the function. This is simple because in this example we know that buggySum should behave just as sum. Therefore we can just compare the results of the two functions.
