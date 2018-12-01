@@ -93,3 +93,22 @@ AUTOMATIC :D
 (after 71 tests and 7 shrinks):     
 [30,7]
 \end{minted}
+
+JAVA EXAMPLE
+
+\begin{minted}{java}
+int sum(List<Integer> list){
+    int output = list.stream().mapToInt(Integer::intValue).sum();
+    if(list.contains(30) && list.contains(7))
+        return output + 1;
+    else
+        return output;
+}
+
+@Property
+void propSum(@ForAll List<@IntRange(min = 0, max = 1000) Integer> list) {
+    int result = sum(list);
+    int expectedResult = list.stream().mapToInt(Integer::intValue).sum();
+    assert(result == expectedResult);
+}
+\end{minted}

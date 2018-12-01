@@ -3,6 +3,7 @@ import net.jqwik.api.constraints.*;
 import org.assertj.core.api.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PropertyTest {
 
@@ -41,6 +42,21 @@ public class PropertyTest {
     <T> boolean unboundedGenericTypesAreResolved(@ForAll List<T> items, @ForAll T newItem) {
         items.add(newItem);
         return items.contains(newItem);
+    }
+
+    int sum(List<Integer> list){
+        int output = list.stream().mapToInt(Integer::intValue).sum();
+        if(list.contains(30) && list.contains(7))
+            return output + 1;
+        else
+            return output;
+    }
+
+    @Property
+    void propSum(@ForAll List<@IntRange(min = 0, max = 1000) Integer> list) {
+        int result = sum(list);
+        int expectedResult = list.stream().mapToInt(Integer::intValue).sum();
+        assert result == expectedResult;
     }
 
 }
