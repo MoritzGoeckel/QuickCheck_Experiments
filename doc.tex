@@ -62,21 +62,25 @@ An introduction} % Subtitle
 \newpage
 \section{Introduction}
 
-\subsection{Structure}
-
-At first this work is going to give a brief introduction to software testing, automated testing and the difficulties of testing large systems. To conclude the introduction the idea of random testing is going to be proposed and motivated. The second chapter is aiming to give an overview over the ideas of QuickCheck. The theory is aided by examples in Haskell, as this is the language QuickCheck was originally written in. The third chapter deals with the evaluation on how the ideas of QuickCheck translate to another language of another paradigm. As an example Java was chosen as it is commonly used in the industry and is an imperative language in contrast to Haskell. In the last chapter this work will then give an example on how QuickCheck was used in a commercial setting and how it performed.
-
 \subsection{Software testing}
 
 Testing is the primary method to evaluate the correctness of software today\cite{Ammann2016}. Even though exhaustive testing is possible in many cases and the majority of bugs can be triggered by relatively few test cases\cite{Kuhn2004}, the required effort to find these test cases can be high. In practice the time spend writing code is not seldom matched by the time spend on finding bugs and creating tests.
 
 Test cases have to be defined to evaluate a systems correctness. Such a test case usually consists of two components: The stimulus and the expected result. A stimulus can be any kind of input that is passed to the system under test (SUT). The expected result is the expected output or state of the SUT after the test.
 
-The execution of such a test case can be divided into three distinct phases. First the SUT has to be stimulated by the defined stimulus. In practice this means for example that a person uses the software in a certain way or that a function is called with certain parameters. The second phase is the observation of the SUT's behavior. In practice the user might just look at the UI of the software or the return value of the invoked function is stored in memory. In the final phase the previously recorded data is compared with the expected results of the test case. This could mean in practice that the tester notices that the formatting of a website is off or that the function returned a incorrect result.
+The execution of such a test case can be divided into three distinct phases:
+
+\begin{enumerate}
+\item Stimulation of the SUT
+\item Observation of the reaction
+\item Comparison to the expected reaction
+\end{enumerate}
+
+First the SUT has to be stimulated by the defined stimulus. In practice this means for example that a person uses the software in a certain way or that a function is called with certain parameters. The second phase is the observation of the SUT's behavior. In practice the user might just look at the UI of the software or the return value of the invoked function is stored in memory. In the final phase the previously recorded data is compared with the expected results of the test case. This could mean in practice that the tester notices that the formatting of a website is off or that the function returned a incorrect result.
 
 \subsection{Automated software testing}
 
-One way to evaluate the correctness of software is to keep and eye on irregularities while manually testing it. This way is very time consuming as every test case has to be conducted by a person. It can take months to test a big software system this way\cite{Arts06}. Because of this human element, manual testing is also very error prone and therefore not reliable. As an addition to manual testing automated testing has been widely adopted in the industry.
+One way to evaluate the correctness of software is to manually test it. This way is very time consuming as every test case has to be conducted by a person whenever the correctness of the software needs to be evaluated. It can take months to test a big software system this way\cite{Arts06}. Because of the human element, manual testing is also very error prone and therefore not reliable. Because of this automated testing has been widely adopted in the industry as an addition to manual testing.
 
 In automated software testing the three previously described phases are implemented in code to be executed automatically after a certain test case has been defined. The major benefit of this way of testing is that conducting tests becomes very cheap. The downside is that defining such test cases can be labour intensive.
 
@@ -87,13 +91,7 @@ testSum =
 \end{minted}
 
 This is an example of a very basic test case. The test case is implemented as a function in Haskell; it's name is "testSum". As the name suggests this test case evaluates the correctness of the "sum" function. The "sum" function receives as input an array of integers and returns a single integer. Therefore the SUT in this example is the "sum" function. When we execute the test case (invoke the "testSum" function) the three previously
-described steps are taken: The SUT is stimulated by invoking it with the array of 1 and 2. The behavior of the system is recorded and compared with the expected result. In this case the expected result is "3". The test case then returns "True" if it holds and "False" otherwise. 
-
-\subsection{The problem of testing large systems}
-
-The problem that arises with testing is that the amount of required test cases for a good coverage of a software system is rising exponentially as the system becomes larger and more complex. Imagine for example a software with n features. To test each feature individually, one would need at least n test cases. This is still feasible. But in most systems the features interact with each other. This leads to the necessity to also test every feature in cooperation with every other feature. Testing these pairs of features requires us to write therefore an additional $n^2$  new test cases. This thought experiment can be continued with three interacting features, ergo $n^3$ necessary test cases and so forth\cite{Hughes2016}.
-
-We find that in very large complex systems it is often no longer feasible to gain good test coverage by writing test cases manually. Another way of testing needs to be found. 
+described steps are taken: The SUT is stimulated by invoking it with the array of 1 and 2. The behavior of the system is recorded and compared with the expected result. In this case the expected result is "3". The test case then returns "True" if it holds and "False" otherwise.
 
 \subsection{Random testing}
 
@@ -117,6 +115,10 @@ prop_sum =
 \end{minted}
 
 This is example is a reimplementation of the sum test case that we defined in the section "Automated software testing". We use the concepts of QuickCheck to test the SUT not only with one array but with 100. This may seem daunting at first glance, but it is going to get clear after reading the next chapter.
+
+\subsection{Structure}
+
+After this work just gave a brief introduction to software testing, automated testing and the difficulties of testing large systems, the idea of random testing was proposed and motivated. The following second chapter is aiming to give an overview over the ideas of QuickCheck. The theory is aided by examples in Haskell, as this is the language QuickCheck was originally written in. The third chapter deals with the evaluation on how the ideas of QuickCheck translate to another language of another paradigm. As an example Java was chosen as it is commonly used in the industry and is an imperative language in contrast to Haskell. Focus of this chapter is the comparison of the look and feel of QuickCheck in both languages. In the last chapter this work will then give an example on how QuickCheck was used in a commercial setting and how it performed.
 
 \newpage
 \section{The idea of QuickCheck}
@@ -304,7 +306,7 @@ Java is at the time of writing the most popular programming language according t
 
 \subsection{Jqwik}
 
-In the research for this work already seven implementations of QuickCheck for Java have been found. Some ar no longer under development and the amount of provided functionalities varies. But anyhow its surprising to find such a variety of implementations of the QuickCheck idea. For the sake of providing some insights how the QuickCheck ideas might look in a Java environment the Jqwik\cite{jqwik} has been chosen. Jqwik is a convenient to use and feature rich software package with an exceptional documentation that makes good use of the Java features to implement the ideas of QuickCheck. These are the reasons why Jqwik has been chosen as an example.
+In the research for this work already seven implementations of QuickCheck for Java have been found. Some are no longer under development and the amount of provided functionalities varies. But anyhow its surprising to find such a variety of implementations of the QuickCheck idea. For the sake of providing some insights how the QuickCheck ideas might look in a Java environment the Jqwik\cite{jqwik} has been chosen. Jqwik is a convenient to use and feature rich software package with an exceptional documentation that makes good use of the Java features to implement the ideas of QuickCheck. These are the reasons why Jqwik has been chosen as an example.
 
 \subsection{Properties}
 
