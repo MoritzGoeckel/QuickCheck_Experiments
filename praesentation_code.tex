@@ -24,7 +24,7 @@ AUTOMATISIERTER TEST
 \begin{minted}{haskell}
 testSum :: Bool
 testSum = 
-    sum [1,2] == 3
+    buggySum [1,2] == 3
 
 *Main> testSum
 True
@@ -97,7 +97,7 @@ AUTOMATIC :D
 JAVA EXAMPLE
 
 \begin{minted}{java}
-int sum(List<Integer> list){
+int buggySum(List<Integer> list){
     int output = list.stream().mapToInt(Integer::intValue).sum();
     if(list.contains(30) && list.contains(7))
         return output + 1;
@@ -108,6 +108,19 @@ int sum(List<Integer> list){
 @Property
 void propSum(@ForAll List<@IntRange(min = 0, max = 1000) Integer> list) {
     int result = sum(list);
+    int expectedResult = list.stream().mapToInt(Integer::intValue).sum();
+    assert(result == expectedResult);
+}
+\end{minted}
+
+\begin{minted}{java}
+int buggySum(List<Integer> list){
+    ...
+}
+
+@Property
+void propSum(@ForAll List<@IntRange(min = 0, max = 1000) Integer> list) {
+    int result = buggySum(list);
     int expectedResult = list.stream().mapToInt(Integer::intValue).sum();
     assert(result == expectedResult);
 }
