@@ -121,7 +121,7 @@ This is example is a reimplementation of the sum test case that we defined in th
 After this work just gave a brief introduction to software testing, automated testing and the difficulties of testing large systems, the idea of random testing was proposed and motivated. The following second chapter is aiming to give an overview over the ideas of QuickCheck. The theory is aided by examples in Haskell, as this is the language QuickCheck was originally written in. The third chapter deals with the evaluation on how the ideas of QuickCheck translate to another language of another paradigm. As an example Java was chosen as it is commonly used in the industry and is an imperative language in contrast to Haskell. Focus of this chapter is the comparison of the look and feel of QuickCheck in both languages. In the last chapter this work will then give an example on how QuickCheck was used in a commercial setting and how it performed.
 
 \newpage
-\section{The idea of QuickCheck}
+\section{QuickCheck}
 
 QuickCheck has three core pillars: Properties which define a general rule about the to be tested code, generators which create controllable random input data to create test cases and "shrinking" which reduces failing test cases to an minimal test case to aid diagnosis. These three concepts will be shown in this chapter.
 
@@ -298,13 +298,11 @@ This report is not useful. QuickCheck told us that the test breaks but we have n
 QuickCheck found a failing test case within 93 tries and then removed iteratively more and more elements from the list that made the test fail. After 9 shrinks QuickCheck found the simplest failing test case. Now the bug is obvious: "buggySum" always breaks when both 7 and 30 are in the input array. QuickChecks shrinking is a very useful feature for finding bugs.
 
 \newpage
-\section{QuickCheck in Java}
+\section{Jqwik}
 
 The section "The idea of QuickCheck" utilized exclusively Haskell to show the main ideas behind QuickCheck. This is because QuickCheck has been originally implemented in Haskell. But even though QuickCheck is rooted in functional programming, its main ideas still have been translated into many other languages and paradigms. As functional programming avoids uncontrolled side effects, it is known for being better testable. Therefore the question whether or not the ideas of QuickCheck can be applied to imperative languages arises. 
 
 Java is at the time of writing the most popular programming language according to the TIOBE Index\cite{tiobe2018}. Even though such rankings should always be "taken with a grain of salt" it is still agreed upon that Java is a quite widely used language today. This is why it is interesting to evaluate whether or not the ideas of QuickCheck can be applied to modern Java today.
-
-\subsection{Jqwik}
 
 In the research for this work already seven implementations of QuickCheck for Java have been found. Some are no longer under development and the amount of provided functionalities varies. But anyhow its surprising to find such a variety of implementations of the QuickCheck idea. For the sake of providing some insights how the QuickCheck ideas might look in a Java environment the Jqwik\cite{jqwik} has been chosen. Jqwik is a convenient to use and feature rich software package with an exceptional documentation that makes good use of the Java features to implement the ideas of QuickCheck. These are the reasons why Jqwik has been chosen as an example.
 
