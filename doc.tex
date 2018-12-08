@@ -80,7 +80,7 @@ First the SUT has to be stimulated by the defined stimulus. In practice this mea
 
 \subsection{Automated software testing}
 
-One way to evaluate the correctness of software is to manually test it. This way is very time consuming as every test case has to be conducted by a person whenever the correctness of the software needs to be evaluated. It can take months to test a big software system this way\cite{Arts06}. Because of the human element, manual testing is also very error prone and therefore not reliable. Because of this automated testing has been widely adopted in the industry as an addition to manual testing.
+One way to evaluate the correctness of software is to manually test it. This way is very time consuming as every test case has to be conducted by a person whenever the correctness of the software needs to be evaluated. It can take months to test a big software system this way\cite{Arts06}. Because of the human element, manual testing is also very error prone and therefore not reliable. To prevent mistakes and to reduce costs automated testing has been widely adopted in the industry as an addition to manual testing.
 
 In automated software testing the three previously described phases are implemented in code to be executed automatically after a certain test case has been defined. The major benefit of this way of testing is that conducting tests becomes very cheap. The downside is that defining such test cases can be labour intensive.
 
@@ -118,7 +118,7 @@ This is example is a reimplementation of the sum test case that we defined in th
 
 \subsection{Structure}
 
-After this work just gave a brief introduction to software testing, automated testing and the difficulties of testing large systems, the idea of random testing was proposed and motivated. The following second chapter is aiming to give an overview over the ideas of QuickCheck. The theory is aided by examples in Haskell, as this is the language QuickCheck was originally written in. The third chapter deals with the evaluation on how the ideas of QuickCheck translate to another language of another paradigm. As an example Java was chosen as it is commonly used in the industry and is an imperative language in contrast to Haskell. Focus of this chapter is the comparison of the look and feel of QuickCheck in both languages. In the last chapter this work will then give an example on how QuickCheck was used in a commercial setting and how it performed.
+After this work just gave a brief introduction to software testing, automated testing and the idea of random testing was proposed and motivated. The following second chapter is aiming to give an overview over the ideas of QuickCheck. The theory is aided by examples in Haskell, as this is the language QuickCheck was originally written in. The third chapter deals with the evaluation on how the ideas of QuickCheck translate to another language of another paradigm. As an example Java was chosen as it is commonly used in the industry and is an imperative language in contrast to Haskell. Focus of this chapter is the comparison of the look and feel of QuickCheck in both languages. In the last chapter this work will then give an example on how QuickCheck was used in a commercial setting and how it performed.
 
 \newpage
 \section{QuickCheck}
@@ -127,7 +127,7 @@ QuickCheck has three core pillars: Properties which define a general rule about 
 
 \subsection{Properties}
 
-The most expensive part of software testing is not to run or to evaluate them, often the most expensive part is writing the test cases. QuickCheck tackles that problem by letting the software developer write generalized test functions of which each covers many test cases. These generalized test functions are called properties in QuickCheck\cite{Hughes2010}. Because of this generalized approach it is not necessary to write more than one property for each logical property of the to be tested function because many different test cases will be generated anyway\cite{Hughes2006}.
+The most expensive part of software testing is not to run or to evaluate the tests; often the most expensive part is writing the test cases. QuickCheck tackles that problem by letting the software developer write generalized test functions which covers many test cases at once. These generalized test functions are called properties in QuickCheck\cite{Hughes2010}. Because of this generalized approach it is not necessary to write more than one property for each logical property of the to be tested function because many different test cases will be generated anyway\cite{Hughes2006}.
 
 The concept named property in QuickCheck is equivalent to the concepts of invariants and test oracles. Invariants originated in mathematics to describe rules that hold no matter the concrete case. Oracles are functions that determine whether or not a test has passed.
 
@@ -251,7 +251,7 @@ generate (vectorOf 12 mostlyPositive)
 -- [7,10,4,10,7,4,-8,3,9,1,0,7]
 \end{minted}
 
-This example defines a generator which consists of three generators with assigned probabilities: In 80\% of the cases it is going to choose an integer between 1 and 10, with 10\% probability it will choose an integer between -10 and -1 and the 0 is chosen with also 10\% probability. This generator is therefore highly skewed towards positive numbers but also generates negative numbers occasionally. This is achieved by using the frequency function that takes an array of tuples of the frequency and the generator. To test the generator we did not define a property to use it with but instead just created some values with the function "generate".
+This example defines a generator which consists of three generators with assigned probabilities: In 80\% of the cases it is going to choose an integer between 1 and 10, with 10\% probability it will choose an integer between -10 and -1 and the 0 is chosen with also 10\% probability. This generator is therefore highly skewed towards positive numbers but also generates negative numbers occasionally. This is achieved by using the frequency function that takes an array of tuples of the frequency and the generator. To test the generator we did not define a property to use it with but instead just created some values with the "generate" function.
 
 \subsection{Shrinking}
 
@@ -300,7 +300,7 @@ QuickCheck found a failing test case within 93 tries and then removed iterativel
 \newpage
 \section{Jqwik}
 
-The section "The idea of QuickCheck" utilized exclusively Haskell to show the main ideas behind QuickCheck. This is because QuickCheck has been originally implemented in Haskell. But even though QuickCheck is rooted in functional programming, its main ideas still have been translated into many other languages and paradigms. As functional programming avoids uncontrolled side effects, it is known for being better testable. Therefore the question whether or not the ideas of QuickCheck can be applied to imperative languages arises. 
+The section "QuickCheck" utilized exclusively Haskell to show the main ideas behind QuickCheck. This is because QuickCheck has been originally implemented in Haskell. But even though QuickCheck is rooted in functional programming, its main ideas still have been translated into many other languages and paradigms. As functional programming avoids uncontrolled side effects, it is known for being better testable. Therefore the question whether or not the ideas of QuickCheck can be applied to imperative languages arises. 
 
 Java is at the time of writing the most popular programming language according to the TIOBE Index\cite{tiobe2018}. Even though such rankings should always be "taken with a grain of salt" it is still agreed upon that Java is a quite widely used language today. This is why it is interesting to evaluate whether or not the ideas of QuickCheck can be applied to modern Java today.
 
@@ -364,11 +364,11 @@ Arbitrary<Integer> oddNumbers() {
 }
 \end{minted} 
 
-Note that this example uses the previously presented frequency method that works just like the one in Haskell and that the Arbitraries class utilizes Java streams for some of its predefined generators.
+Note that this example uses the previously presented frequency method that works just like the one in Haskell. Also note that the Arbitraries class utilizes Java streams for some of its predefined generators.
 
 \subsection{Stateful testing}
 
-As Java is a imperative and object oriented language, Java applications are inherently stateful. Jqwik supports testing stateful methods in a quite similar way like described in the section "Stateful systems" in Haskell. Just to recap: In essence Actions need to be defined so that they can be executed on the to be tested object. One test case consists of a list of random length containing a random sequence of these actions, instantiated with random parameters. After the execution of each action the state of the to be tested object has to be evaluated to determine whether irregularities occurred. Here an example:
+As Java is a imperative and object oriented language, Java applications are inherently stateful. Jqwik supports testing stateful systems. In essence Actions need to be defined so that they can be executed on the to be tested object. One test case consists of a list of random length containing a random sequence of these actions, instantiated with random parameters. After the execution of each action the state of the to be tested object has to be evaluated to determine whether irregularities occurred. Here an example:
 
 \begin{minted}{java}
 class MyList {
@@ -530,14 +530,14 @@ The authors of Quviq QuickCheck claim that their software can be used effectivel
 
 On the other hand it turns out that after QuickCheck found a bug, it tends to always find it again. Therefore the bug either has to be fixed or the test case has to be adapted to continue testing. Before this change, testing with QuickCheck can hardly continue. The creators of QuickCheck state "QuickCheck is very likely to report the most common bug on every run"\cite{Arts06}.
 
-It is also stated that the specification of the to be tested system needs to be consistent, unambiguous and the testing team has to understand it very well. Every ambiguity or inconsistency in the specification will eventually be found by QuickCheck and will look like a bug. This however should be the case with every thorough testing system and should therefore not been seen as a downside\cite{Arts06}.
+It is also stated that the specification of the to be tested system needs to be consistent, unambiguous and the testing team has to understand it very well. Every ambiguity or inconsistency in the specification will eventually be found by QuickCheck and will look like a bug. This however should be the case with every thorough testing system and should therefore not be seen as a downside\cite{Arts06}.
 
 \newpage
 \section{Conclusion}
 
 %Testing and random testing
 
-At the beginning of this work the importance of testing has been stated: It is the most common way for evaluating the correctness of software. It was shown that the testing effort grows exponentially the bigger the to be tested system becomes. Random testing is the logical next step after automated testing and as an example for such a random testing approach QuickCheck was presented.  
+At the beginning of this work the importance of testing has been stated: It is the most common way for evaluating the correctness of software. Random testing is the logical next step after automated testing and as an example for such a random testing approach QuickCheck was presented. 
 
 %ideas of QuickCheck
 
