@@ -1,29 +1,33 @@
-Intro, um was geht's, Testing, ...
+TODO:
 
-buggySum, wo liegt der Fehler, kurz Haskell syntax vorstellen
-Sagen, "contrived" example der Kuerze wegen.
-
-Testing, Drei Phasen, .... gut!
-
-Aber nochmal die Probleme explizit auflisten.
+Aber nochmal die Probleme von 3 phasen explizit auflisten.
 
 Systematische Testausfuehrung.
 Testorakel? Testfaelle?
 
 Die Loesung: QuickCheck
-Urspruenglich Haskell, fuer die meisten gaengigen Programmiersprachen verfuegbar.
+
+Vorteile gegenueber "random testing", explizit auflisten.
+
+DONE:
+
+buggySum, wo liegt der Fehler, kurz Haskell syntax vorstellen
+
+Sagen, "contrived" example der Kuerze wegen.
+
+Testing, Drei Phasen, .... gut!
 
 Wichtig, Generators, Strategien zur Testfallgenerierung!
+
+Rechtschreibung: "Standart"?
 
 Im Detail erklaeren.
 quickCheck bekommt als Eingabe:
  1. Testling (SUT) vereint mit Testorakel (property)
  2. Testfallstrategie
 
-Vorteile gegenueber "random testing", explizit auflisten.
+Urspruenglich Haskell, fuer die meisten gaengigen Programmiersprachen verfuegbar.
 
 Im Vortrag. Kurz sagen, Erfolgsstories, QuickCheck in der Industrie, ...
 
-Rechtschreibung: "Standart"?
-
-HOCHLADEN VON ARBEIT
+Intro, um was geht's, Testing, ...
