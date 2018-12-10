@@ -5,10 +5,6 @@ Aber nochmal die Probleme von 3 phasen explizit auflisten.
 Systematische Testausfuehrung.
 Testorakel? Testfaelle?
 
-Die Loesung: QuickCheck
-
-Vorteile gegenueber "random testing", explizit auflisten.
-
 DONE:
 
 buggySum, wo liegt der Fehler, kurz Haskell syntax vorstellen
@@ -31,3 +27,8 @@ Urspruenglich Haskell, fuer die meisten gaengigen Programmiersprachen verfuegbar
 Im Vortrag. Kurz sagen, Erfolgsstories, QuickCheck in der Industrie, ...
 
 Intro, um was geht's, Testing, ...
+
+Vorteile gegenueber "random testing", explizit auflisten.
+
+Die Loesung: QuickCheck
+
